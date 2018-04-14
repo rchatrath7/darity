@@ -1,27 +1,18 @@
 {
   "name": "darity",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "build": "neutrino build --use @neutrinojs/react",
-    "start": "neutrino start --use @neutrinojs/react",
-    "lint": "neutrino lint",
-    "test": "neutrino test --use @neutrinojs/react @neutrinojs/jest"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
-    "prop-types": "^15.6.1",
+    "@material-ui/icons": "^1.0.0-beta.42",
+    "material-ui": "^1.0.0-beta.41",
     "react": "^16.3.1",
     "react-dom": "^16.3.1",
-    "react-hot-loader": "^4.0.1"
+    "react-scripts": "1.1.4"
   },
-  "devDependencies": {
-    "@neutrinojs/airbnb": "^8.2.2",
-    "@neutrinojs/jest": "^8.2.2",
-    "@neutrinojs/react": "^8.2.2",
-    "neutrino": "^8.2.2"
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   }
 }
