@@ -1,31 +1,8 @@
-// const video = document.querySelector('video');
-// const settings = {
-// 	video: true
-// };
-
-// const getMedia = navigator.mediaDevices.getUserMedia(settings);
-// getMedia.then((stream) => {
-// 	video.srcObject = stream;
-// 	const recorder = new MediaRecorder(stream);
-// 	const recorder = stream.record();
-// 	setTimeout(() => {
-// 		recorder.getRecordedData((blob) => {
-// 			const postData = {
-// 				video: blob,
-// 				metadata: 'Recording',
-// 				action: 'upload_video'
-// 			};
-// 			console.log(blob);
-// 		});
-// 	}, 2000);
-// }).catch((error) => {
-// 	console.error(`Error: ${error}`);
-// });
+// https://developer.mozilla.org/en-US/docs/Web/API/MediaStream_Recording_API/Recording_a_media_element
 
 const preview = document.querySelector('video');
-const downloadButton = document.querySelector('button');
-const recording = document.querySelector('#recording');
 const recordingTimeMS = 5000;
+const SERVER_URL = 'http://localhost:3000';
 
 function wait(time) {
 	return new Promise((resolve) => {
@@ -55,24 +32,37 @@ function startRecording(stream, lengthInMS) {
 	return Promise.all([
 		stopped,
 		recorded
-	])
-	.then(() => data);
+	]).then(() => data);
 }
 
-navigator.mediaDevices.getUserMedia({
-	video: true,
-	audio: true
-}).then(stream => {
-	preview.srcObject = stream;
-	downloadButton.href = stream;
-	preview.captureStream = preview.captureStream || preview.mozCaptureStream;
-	return new Promise(resolve => preview.onplaying = resolve);
-}).then(() => startRecording(preview.captureStream(), recordingTimeMS))
-.then (recordedChunks => {
-	let recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
-	recording.src = URL.createObjectURL(recordedBlob);
-	downloadButton.href = recording.src;
-	downloadButton.download = "RecordedVideo.webm";
-	console.log("Successfully recorded " + recordedBlob.size + " bytes of " + recordedBlob.type + " media.");
-})
-.catch(console.log);
+function doRecording() {
+	const recording = document.createElement('video');
+	navigator.mediaDevices.getUserMedia({
+		video: true,
+		audio: true
+	}).then(stream => {
+		preview.srcObject = stream;
+		preview.captureStream = preview.captureStream || preview.mozCaptureStream;
+		return new Promise(resolve => preview.onplaying = resolve);
+	}).then(() => startRecording(preview.captureStream(), recordingTimeMS))
+	.then (recordedChunks => {
+		let recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
+		const blobURL = URL.createObjectURL(recordedBlob);
+		recording.src = blobURL;
+		console.log("Successfully recorded " + recordedBlob.size + " bytes of " + recordedBlob.type + " media.");
+		console.log(blobURL);
+		const fd = new FormData();
+		fd.append('fname', 'video.webm');
+		fd.append('data', recordedBlob);
+		$.ajax({
+			type: 'POST',
+			url: `${SERVER_URL}/video`,
+			data: fd,
+			processData: false,
+			contentType: false
+		}).done(function(data) {
+			console.log(data);
+			console.log(`${SERVER_URL}/${data.url}`);
+		});
+	}).catch(console.log);
+}
