@@ -33,14 +33,18 @@ const videoStorage = multer.diskStorage({
 		cb(null, __dirname + `/${PUBLIC_DIR}/${VIDEO_DIR}`);
 	},
 	filename: function (req, file, cb) {
-		cb(null, Date.now() + '.webm');
+		cb(null, `${req.body.uid}-${Date.now()}.webm`);
 	}
 });
 const videoUpload = multer({storage: videoStorage}).single('data');
 
-app.post("/video", videoUpload, function (request, response) {
-	const id = request.params.id;
-	const state = request.query;
+app.get('/hello', function(request, response) {
+	response.send({
+		value: 'Hello World!'
+	});
+});
+
+app.post('/video', videoUpload, function(request, response) {
 	console.log(request.body);
 	console.log(request.file);
 	const file = request.file;
