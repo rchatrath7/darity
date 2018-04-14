@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "create-react-app": "^1.5.2"
+  },
+  "devDependencies": {
+    "@neutrinojs/react": "^8.2.2",
+    "neutrino": "^8.2.2"
+  }
+}

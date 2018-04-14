@@ -1,0 +1,27 @@
+{
+  "name": "darity",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "neutrino build --use @neutrinojs/react",
+    "start": "neutrino start --use @neutrinojs/react",
+    "lint": "neutrino lint",
+    "test": "neutrino test --use @neutrinojs/react @neutrinojs/jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "prop-types": "^15.6.1",
+    "react": "^16.3.1",
+    "react-dom": "^16.3.1",
+    "react-hot-loader": "^4.0.1"
+  },
+  "devDependencies": {
+    "@neutrinojs/airbnb": "^8.2.2",
+    "@neutrinojs/jest": "^8.2.2",
+    "@neutrinojs/react": "^8.2.2",
+    "neutrino": "^8.2.2"
+  }
+}
