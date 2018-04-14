@@ -3,6 +3,7 @@ require('dotenv').config();
 const firebase = require('firebase');
 const express = require('express');
 const multer = require('multer');
+const bodyParser = require('body-parser');
 const app = express();
 
 const config = {
@@ -24,6 +25,9 @@ app.use((req, res, next) => {
 	next();
 });
 
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
 const PUBLIC_DIR = 'public';
 const VIDEO_DIR = 'videos';
 app.use(express.static(PUBLIC_DIR));
@@ -42,6 +46,28 @@ app.get('/hello', function(request, response) {
 	response.send({
 		value: 'Hello World!'
 	});
+});
+
+app.post('/login', function(request, response) {
+	const query = request.body;
+	const uid = query.uid;
+	if (!uid) {
+		response.send({
+			success: false,
+			error: 'Missing user id.'
+		});
+	} else {
+		db.ref(`users/${uid}`).set(query).then((done) => {
+			response.send({
+				success: true
+			});
+		}).catch((error) => {
+			response.send({
+				success: false,
+				error: `DatabaseError: ${error}`
+			});
+		});
+	}
 });
 
 app.post('/video', videoUpload, function(request, response) {
