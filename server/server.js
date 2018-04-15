@@ -70,6 +70,29 @@ app.post('/login', function(request, response) {
 	}
 });
 
+app.get('/profile', function(request, response) {
+	const query = request.query;
+	const uid = query.uid;
+	if (uid) {
+		db.ref(`users/${uid}`).once('value', (snap) => {
+			const profile = snap.val() || false;
+			if (profile) {
+				response.send(profile);
+			} else {
+				response.send({
+					success: false,
+					error: `No profile for user id: ${uid}`
+				});
+			}
+		});
+	} else {
+		response.send({
+			success: false,
+			error: 'Missing user id.'
+		});
+	}
+});
+
 app.post('/video', videoUpload, function(request, response) {
 	console.log(request.body);
 	console.log(request.file);
