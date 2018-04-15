@@ -438,7 +438,7 @@ app.get('/recommendations/:user', function(request, response) {
 					const userMap = uSnap.val() || {};
 					const charMap = cSnap.val() || {};
 					const dareMap = snap.val() || {};
-					const list = Object.keys(dareMap).map((key) => {
+					const list = dares.map((key) => {
 						let record = dareMap[key];
 						record.id = key;
 						return record;
