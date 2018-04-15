@@ -4,6 +4,8 @@ const firebase = require('firebase');
 const express = require('express');
 const multer = require('multer');
 const bodyParser = require('body-parser');
+const fetch = require('node-fetch');
+const stripe = require('stripe')(process.env.STRIPE_TOKEN);
 const app = express();
 
 const config = {
@@ -16,8 +18,6 @@ const config = {
 };
 const FirebaseApp = firebase.initializeApp(config, 'Darity Server');
 const db = FirebaseApp.database();
-
-const stripe = require('stripe')(process.env.STRIPE_TOKEN);
 
 console.log("Started Darity Server.");
 
@@ -396,6 +396,33 @@ app.post('/dares/update/:id', function(request, response) {
 			});
 		});
 	}
+});
+
+app.get('/recommendations/:user', function(request, response) {
+	const user = request.params.user;
+	fetch(`https://pastoral-talon.glitch.me/recommend/${user}`)
+	.then((recRes) => recRes.json())
+	.then((recBody) => {
+		const dares = recBody;
+		db.ref('dares').once('value', (snap) => {
+			const dareMap = snap.val() || {};
+			const dareList = dares.filter((dareid) => {
+				return dareid in dareMap;
+			}).map((dareid) => {
+				return dareMap[dareid];
+			});
+			console.log(dares, dareList)
+			response.send({
+				success: true,
+				dares: dareList
+			});
+		});
+	}).catch((error) => {
+		response.send({
+			success: false,
+			error: `Ask Ayan About: ${error}`
+		});
+	});
 });
 
 app.get('/charities/view/:id', function(request, response) {
