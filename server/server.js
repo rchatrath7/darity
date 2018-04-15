@@ -52,30 +52,36 @@ app.get('/hello', function(request, response) {
 });
 
 app.get('/donations/all', function(request, response) {
-	db.ref('dares').once('value', (snap) => {
-		const dareMap = snap.val() || {};
-		getDonationList(null).then((listRes) => {
-			const donationList = listRes.list.filter((record) => {
-				return record.dare in dareMap;
-			}).map((record) => {
-				record.charity = dareMap[record.dare].charity;
-				return record;
+	db.ref('charities').once('value', (other) => {
+		const charMap = other.val() || {};
+		db.ref('dares').once('value', (snap) => {
+			const dareMap = snap.val() || {};
+			getDonationList(null).then((listRes) => {
+				const donationList = listRes.list.filter((record) => {
+					return record.dare in dareMap;
+				}).map((record) => {
+					record.charity = dareMap[record.dare].charity || null;
+					if (record.charity in charMap) {
+						record.category = charMap[record.charity].category;
+					} else {
+						record.category = null;
+					}
+					return record;
+				});
+				response.send(donationList);	
+			}).catch((error) => {
+				response.send({
+					success: false,
+					error: `DatabaseError: ${error}`
+				});
 			});
-			response.send({
-				donations: donationList
-			});	
-		}).catch((error) => {
-			response.send({
-				success: false,
-				error: `DatabaseError: ${error}`
-			});
-		});
+	});
 	});
 });
 
-app.post('/give', function(request, response) {
+app.post('/donations/create/:id', function(request, response) {
 	const query = request.query;
-	const dareid = query.dare;
+	const dareid = request.params.id; // query.dare;
 	const userid = query.user;
 	const amount = parseInt(query.amount);
 	const token = request.body.token;
@@ -89,7 +95,7 @@ app.post('/give', function(request, response) {
 			amount: amount,
 			currency: 'usd',
 			description: 'Donation to Darity',
-			source: token,
+			source: token
 		});
 		charge.then((success) => {
 			const donationData = {

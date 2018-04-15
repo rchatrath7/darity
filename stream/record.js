@@ -12,7 +12,7 @@ function main(user) {
 	startCamera();
 	const DARE_ID = getQueryParams(document.location.search).dare;
 	const dareid = 'sample';
-	const recordingTimeMS = 10 * 1000;
+	const recordingTimeMS = 20 * 1000;
 	let startedRecording = false;
 	buttonRecord.addEventListener('click', (e) => {
 		if (!startedRecording) {

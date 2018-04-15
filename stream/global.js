@@ -35,7 +35,7 @@ function getQueryParams(qs) {
 	return params;
 }
 
-const SERVER_URL = 'https://74484cce.ngrok.io';
+const SERVER_URL = 'https://22bb84e9.ngrok.io';
 
 function getProvider(source) {
 	return source.providerData[0].providerId.split('.')[0];
