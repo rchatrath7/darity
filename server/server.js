@@ -61,7 +61,7 @@ app.post('/share/create', function(request, response) {
 		dare: dare,
 		timestamp: Date.now()
 	}).then((done) => {
-		res.send({
+		response.send({
 			success: true
 		});
 	});
