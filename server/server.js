@@ -17,6 +17,8 @@ const config = {
 const FirebaseApp = firebase.initializeApp(config, 'Darity Server');
 const db = FirebaseApp.database();
 
+const stripe = require('stripe')(process.env.STRIPE_TOKEN);
+
 console.log("Started Darity Server.");
 
 app.use((req, res, next) => {
@@ -52,27 +54,41 @@ app.post('/give', function(request, response) {
 	const query = request.query;
 	const dareid = query.dare;
 	const userid = query.user;
-	const amount = parseFloat(query.amount);
-	if (!userid || !dareid || !amount) {
+	const amount = parseInt(query.amount);
+	const token = request.body.token;
+	if (!userid || !dareid || !amount || !token) {
 		response.send({
 			success: false,
-			error: 'Must provide user id, dare id, and amount.'
+			error: 'Must provide user id, dare id, amount, and Stripe token.'
 		});
 	} else {
-		const donationData = {
-			dare: dareid,
-			user: userid,
+		const charge = stripe.charges.create({
 			amount: amount,
-			timestamp: Date.now()
-		};
-		db.ref(`donations`).push(donationData).then((done) => {
-			response.send({
-				success: true
+			currency: 'usd',
+			description: 'Donation to Darity',
+			source: token,
+		});
+		charge.then((success) => {
+			const donationData = {
+				dare: dareid,
+				user: userid,
+				amount: amount,
+				timestamp: Date.now()
+			};
+			db.ref(`donations`).push(donationData).then((done) => {
+				response.send({
+					success: true
+				});
+			}).catch((error) => {
+				response.send({
+					success: false,
+					error: `DatabaseError: ${error}`
+				});
 			});
 		}).catch((error) => {
 			response.send({
 				success: false,
-				error: `DatabaseError: ${error}`
+				error: `PaymentError: ${error}`
 			});
 		});
 	}
