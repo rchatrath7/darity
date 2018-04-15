@@ -44,7 +44,15 @@
 		}
 
 		.is-level-text .title, .is-level-text .subtitle {
-			margin: 25px 10px;
+			margin: 20px 25px 25px 15px;
+		}
+
+		.is-level-text .subtitle {
+			margin-bottom: 15px;
+		}
+
+		.level-left-holder button {
+			margin: 0 0 0 15px;
 		}
 
 		.buttons {
@@ -61,6 +69,10 @@
 
 		.buttons-block button {
 			margin-top: 10px;
+		}
+
+		.level.smol {
+			margin-bottom: 10px !important;
 		}
 
 	</style>
@@ -81,10 +93,20 @@
 							<div class="is-level-text">
 								<h1 class="title is-1" id="dare-name"></h1>
 								<h2 class="subtitle is-3" id="dare-charity"></h2>
-								<p class="buttons">
-									<button class="button is-medium is-primary" id="customButton">Give</button>
-									<button class="button is-medium is-primary is-inverted is-outlined" id="share-btn">Share</button>
-								</p>
+								<div class="level-left-holder">
+									<div class="level is-mobile">
+										<div class="is-level-text">
+											<div class="level-left">
+												<div class="level-item">
+													<button class="button is-medium is-primary" id="customButton">Give</button>
+												</div>
+												<div class="level-item">
+													<h3 class="subtitle is-5">Goal: $<span id="dare-biggoal"></span></h3>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -103,21 +125,13 @@
 							<div id="dare-video-holder">
 								<h2>Video</h2>
 								<video id="dare-video" controls></video>
-								<div class="level">
-									<div class="level-left">
-										<div class="level-item">
-											<button class="button is-primary is-outlined">
-												<span class="icon">
-													<i class="fa fa-thumbs-up"></i>
-												</span>
-												<span>Confirm Dare</span>
-											</button>
-										</div>
-										<div class="level-item">
-											<p>Did you think they did well enough?</p>
-										</div>
-									</div>
-								</div>
+								<p>Did you think they did well enough?</p>
+								<button class="button is-primary is-outlined">
+									<span class="icon">
+										<i class="fa fa-thumbs-up"></i>
+									</span>
+									<span>Confirm Dare</span>
+								</button>
 							</div>
 							<h2>Progress</h2>
 							<h3>$<span id="dare-raised"></span> raised from <span id="dare-backed"></span> people</h3>
@@ -138,6 +152,15 @@
 										<i class="fa fa-video"></i>
 									</span>
 									<span>Record Dare</span>
+								</button>
+								<br>
+								<br>
+								<p>Hope you're not chickening out...</p>
+								<button class="button is-danger is-outlined" id="edit-btn">
+									<span class="icon">
+										<i class="fas fa-pencil-alt"></i>
+									</span>
+									<span>Edit</span>
 								</button>
 							</div>
 						</div>
@@ -254,6 +277,12 @@
 				url: `${SERVER_URL}/dares/data/${DARE_ID}/?deep=true`
 			}).then((data) => {
 
+				console.log(data);
+				document.querySelector('#dare-name').innerText = data.dare.name;
+				document.querySelector('#dare-description').innerText = data.dare.description;
+				document.querySelector('#dare-charity').innerText = data.charity.name;
+				document.querySelector('#dare-daredevil').style.backgroundImage = `url('${data.daredevil.photo}')`;
+
 				document.getElementById('customButton').addEventListener('click', function(e) {
 					promptGive(data, user);
 					e.preventDefault();
@@ -285,12 +314,6 @@
 					}, function(response){});
 				});
 
-				console.log(data);
-				document.querySelector('#dare-name').innerText = data.dare.name;
-				document.querySelector('#dare-description').innerText = data.dare.description;
-				document.querySelector('#dare-charity').innerText = data.charity.name;
-				document.querySelector('#dare-daredevil').style.backgroundImage = `url('${data.daredevil.photo}')`;
-
 				document.querySelector('#charity-name').innerText = data.charity.name;
 				document.querySelector('#charity-description').innerText = data.charity.description
 				document.querySelector('#charity-category').innerText = data.charity.category;
@@ -302,11 +325,42 @@
 				document.querySelector('#dare-backed').innerText = Object.keys(data.donors).length;
 				document.querySelector('#dare-percentage').innerText = ((sum / data.dare.threshold) * 100).toFixed(0);
 				document.querySelector('#dare-goal').innerText = (data.dare.threshold / 100).toFixed(0);
+				document.querySelector('#dare-biggoal').innerText = (data.dare.threshold / 100).toFixed(0);
 				const profileHolder = document.querySelector('#dare-backers-profiles');
 				for (let donorID in data.donors) {
 					const img = data.donors[donorID].photo;
 					profileHolder.innerHTML += `<div class="profile-picture smol" style="background-image: url('${img}');"></div>`
 				}
+
+				let editing = false;
+				const editBtn = document.querySelector('#edit-btn');
+				editBtn.addEventListener('click', (e) => {
+					if (editing) {
+						document.querySelector('#dare-name').setAttribute('contenteditable', false);
+						document.querySelector('#dare-description').setAttribute('contenteditable', false);
+						const new_name = document.querySelector('#dare-name').innerText;
+						const new_description = document.querySelector('#dare-description').innerText;
+						$.ajax({
+							type: 'POST',
+							url: `${SERVER_URL}/dares/update/${data.dare.id}?=${$.param({
+								name: new_name,
+								description: new_description
+							})}`
+						}).then((done) => {
+							window.location.reload();
+						}).catch(console.error);
+					} else {
+						editBtn.innerHTML = `
+							<span class="icon">
+								<i class="far fa-save"></i>
+							</span>
+							<span>Save</span>
+						`;
+						document.querySelector('#dare-name').setAttribute('contenteditable', true);
+						document.querySelector('#dare-description').setAttribute('contenteditable', true);
+					}
+					editing = !editing;
+				});
 
 			}).catch(console.error);
 		}
