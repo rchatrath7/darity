@@ -12,7 +12,11 @@ import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 const styles = theme => ({
   card: {
     maxWidth: 400,
-    borderRadius: 8, 
+    borderRadius: 8,
+    marginTop: 10, 
+    marginBottom: 10, 
+    marginLeft: 'auto', 
+    marginRight: 'auto',
   },
 
   avatar: {
@@ -26,6 +30,12 @@ const styles = theme => ({
   cardContentTitle: {
     fontSize: 18, 
   },
+
+  action: {
+    borderTopStyle: 'solid', 
+    borderTopWidth: 1, 
+    borderTopColor: theme.palette.secondary.light, 
+  },
 });
 
 class Summary extends React.Component {
@@ -33,38 +43,36 @@ class Summary extends React.Component {
     const { classes } = this.props; 
 
     return (
-      <div>
-        <Card className={classes.card}>
-          <CardHeader
-            avatar={
-              <Avatar aria-label="Daredevil" className={classes.avatar}>
-                D
-              </Avatar>
-            }
-            title="Filler Dare title"
-            subheader="Filler charity name"
-          />
-          <CardContent>
-            <Typography component="h2" className={classes.cardContentTitle}>
-              Summary
-            </Typography>
-            <Typography component="p">
-              Filler text about this dare. 
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <IconButton aria-label="Dares">
-              <FavoriteIcon className={classes.icon} />
-              <Typography component="p">12</Typography>
-            </IconButton> 
-            <IconButton aria-label="Total Raised" disabledIconSpacing>
-              <AttachMoneyIcon className={classes.icon} /> 
-              <Typography component="p">20.00</Typography>
-            </IconButton>
-            <IconButton aria-label="Donate"></IconButton>
-          </CardActions>
-        </Card>
-      </div>
+      <Card className={classes.card}>
+        <CardHeader
+          avatar={
+            <Avatar aria-label="Daredevil" className={classes.avatar}>
+              D
+            </Avatar>
+          }
+          title="Filler Dare title"
+          subheader="Filler charity name"
+        />
+        <CardContent>
+          <Typography component="h2" className={classes.cardContentTitle}>
+            Summary
+          </Typography>
+          <Typography component="p">
+            Filler text about this dare. 
+          </Typography>
+        </CardContent>
+        <CardActions className={classes.action}>
+          <IconButton aria-label="Dares">
+            <FavoriteIcon className={classes.icon} />
+            <Typography component="p">12</Typography>
+          </IconButton> 
+          <IconButton aria-label="Total Raised" disabledIconSpacing>
+            <AttachMoneyIcon className={classes.icon} /> 
+            <Typography component="p">20.00</Typography>
+          </IconButton>
+          <IconButton aria-label="Donate"></IconButton>
+        </CardActions>
+      </Card>
     )    
   }
 }
