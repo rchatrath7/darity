@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Darity</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
+	<script type="text/javascript" src="./vex/vex.combined.min.js"></script>
+	<script type="text/javascript">vex.defaultOptions.className = 'vex-theme-plain';</script>
+	<link rel="stylesheet" type="text/css" href="./vex/vex.css">
+	<link rel="stylesheet" type="text/css" href="./vex/vex-theme-plain.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
+	<script defer src="https://use.fontawesome.com/releases/v5.0.10/js/all.js" integrity="sha384-slN8GvtUJGnv6ca26v8EzVaR9DC58QEwsIk9q1QXdCU8Yu8ck/tL/5szYlBbqmS+" crossorigin="anonymous"></script>
+	<link rel="stylesheet" type="text/css" href="./reset.css">
+	<style type="text/css">
+
+		html {
+			background: black;			
+		}
+
+		/* https://slicejack.com/fullscreen-html5-video-background-css/ */
+
+		.fullscreen-bg {
+			position: fixed;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			overflow: hidden;
+			z-index: -100;
+		}
+
+		.fullscreen-bg__video {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+
+		button#record {
+			width: 120px;
+			height: 120px;
+			border-radius: 60px;
+			background: red;
+			border: none;
+			color: white;
+			font-size: 40px;
+			box-shadow: 0 0 50px rgba(0, 0, 0, 0.75);
+			z-index: 10;
+			outline: none;
+		}
+
+		button#record:hover {
+			cursor: pointer;
+			background: darkred;
+		}
+
+		.centered button {
+			width: 120px;
+			display: block;
+			margin: 0 auto;
+		}
+
+		.bottom button {
+			margin-top: 75vh;
+		}
+
+	</style>
+</head>
+<body>
+	<script type="text/javascript" src="./fb.js"></script>
+	<div class="fullscreen-bg">
+		<video autoplay muted class="fullscreen-bg__video"></video>
+	</div>
+	<div class="centered bottom">
+		<button id="record"><i class="fa fa-video"></i></button>  
+	</div>
+	<script type="text/javascript" src="./global.js"></script>
+	<script type="text/javascript" src="./record.js"></script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Darity</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
+	<script type="text/javascript" src="./vex/vex.combined.min.js"></script>
+	<script type="text/javascript">vex.defaultOptions.className = 'vex-theme-plain';</script>
+	<link rel="stylesheet" type="text/css" href="./vex/vex.css">
+	<link rel="stylesheet" type="text/css" href="./vex/vex-theme-plain.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
+	<script defer src="https://use.fontawesome.com/releases/v5.0.10/js/all.js" integrity="sha384-slN8GvtUJGnv6ca26v8EzVaR9DC58QEwsIk9q1QXdCU8Yu8ck/tL/5szYlBbqmS+" crossorigin="anonymous"></script>
+	<style type="text/css">
+		
+		.profile-picture {
+			border-radius: 50%;
+			display: inline-block;
+		}
+
+		.profile-picture.tol {
+			margin: 10px;
+			width: 100px;
+			height: 100px;
+			background-size: 100px;
+		}
+
+		.profile-picture.smol {
+			margin: 5px;
+			width: 50px;
+			height: 50px;
+			background-size: 50px;
+		}
+
+		.is-banner {
+			background: url('defaultback.png'); no-repeat center center fixed; 
+			-webkit-background-size: cover;
+			-moz-background-size: cover;
+			-o-background-size: cover;
+			background-size: cover;
+		}
+
+		.is-level-text .title, .is-level-text .subtitle {
+			margin: 25px 10px;
+		}
+
+		.buttons {
+			padding: 0px 10px;
+		}
+
+		#daredevil-center, #dare-video-holder {
+			display: none;
+		}
+
+		#dare-video {
+			margin-bottom: 10px;
+		}
+
+		.buttons-block button {
+			margin-top: 10px;
+		}
+
+	</style>
+</head>
+<body>
+	<script type="text/javascript" src="./fb.js"></script>
+	<script src="https://checkout.stripe.com/checkout.js"></script>
+	
+	<section class="hero is-medium is-primary is-banner">
+		<div class="hero-body">
+			<div class="container">
+				<div class="level">
+					<div class="level-left">
+						<div class="level-item">
+							<div class="profile-picture tol" id="dare-daredevil"></div>
+						</div>
+						<div class="level-item">
+							<div class="is-level-text">
+								<h1 class="title is-1" id="dare-name"></h1>
+								<h2 class="subtitle is-3" id="dare-charity"></h2>
+								<p class="buttons">
+									<button class="button is-medium is-primary" id="customButton">Give</button>
+									<button class="button is-medium is-primary is-inverted is-outlined" id="share-btn">Share</button>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="section">
+		<div class="container content">
+			<div class="columns">
+				<div class="column is-6">
+					<div class="card">
+						<div class="card-content">
+							<h2>Description</h2>
+							<p id="dare-description"></p>
+							<div id="dare-video-holder">
+								<h2>Video</h2>
+								<video id="dare-video" controls></video>
+								<div class="level">
+									<div class="level-left">
+										<div class="level-item">
+											<button class="button is-primary is-outlined">
+												<span class="icon">
+													<i class="fa fa-thumbs-up"></i>
+												</span>
+												<span>Confirm Dare</span>
+											</button>
+										</div>
+										<div class="level-item">
+											<p>Did you think they did well enough?</p>
+										</div>
+									</div>
+								</div>
+							</div>
+							<h2>Progress</h2>
+							<h3>$<span id="dare-raised"></span> raised from <span id="dare-backed"></span> people</h3>
+							<div id="dare-backers-profiles"></div>
+							<h3><span id="dare-percentage"></span>% of $<span id="dare-goal"></span> goal</h3>
+						</div>
+					</div>
+					
+				</div>
+				<div class="column is-6">
+					<div id="daredevil-center">
+						<div class="card">
+							<div class="card-content">
+								<h2>Daredevil</h2>
+								<p>Ready to do the dare? Record it here.</p>
+								<button class="button is-primary is-outlined" id="record-btn">
+									<span class="icon">
+										<i class="fa fa-video"></i>
+									</span>
+									<span>Record Dare</span>
+								</button>
+							</div>
+						</div>
+						<br>
+					</div>
+					<div class="card">
+						<div class="card-content">
+							<h2>Sharing</h2>
+							<div class="buttons-block">
+								<button class="button is-info is-outlined" id="facebook-btn">
+									<span class="icon">
+										<i class="fab fa-facebook"></i>
+									</span>
+									<span>Share on Facebook</span>
+								</button>
+								<br>
+								<button class="button is-info is-outlined" id="messenger-btn">
+									<span class="icon">
+										<i class="fab fa-messenger"></i>
+									</span>
+									<span>Share on Messenger</span>
+								</button>
+								<br>
+								<button class="button is-info is-outlined" id="twitter-btn">
+									<span class="icon">
+										<i class="fab fa-twitter"></i>
+									</span>
+									<span>Share on Twitter</span>
+								</button>
+							</div>
+						</div>
+					</div>
+					<br>
+					<div class="card">
+						<div class="card-content">
+							<h2>Charity</h2>
+							<h3 id="charity-name">Charity Title</h3>
+							<p id="charity-description">Charity description.</p>
+							<div class="tags">
+								<span class="tag is-info" id="charity-category">Category</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<script type="text/javascript" src="./global.js"></script>
+	<script type="text/javascript">
+
+		function promptGive(data, user) {
+			vex.dialog.prompt({
+				message: `How much will you give? (USD)`,
+				callback: (giveAmount) => {
+					if (giveAmount) {
+						try {
+							const cents = parseInt((parseFloat(giveAmount) * 100).toFixed(0));
+							doStripe(cents, data, user);
+						} catch (error) {
+							console.error(error);
+						}
+					}
+				}
+			});
+		}
+
+		function doStripe(giveAmount, data, user) {
+			const handler = StripeCheckout.configure({
+				key: 'pk_test_zsTE8lxpJEz03ETvkxlAMIa4',
+				image: 'https://stripe.com/img/documentation/checkout/marketplace.png',
+				locale: 'auto',
+				token: function(token) {
+					// You can access the token ID with `token.id`.
+					// Get the token ID to your server-side code for use.
+					console.log('token', token);
+					$.ajax({
+						type: 'POST',
+						url: `${SERVER_URL}/donations/create/${data.dare.id}/?${$.param({
+							user: user.id,
+							amount: giveAmount
+						})}`,
+						data: {
+							token: token.id
+						}
+					}).then((done) => {
+						vex.dialog.alert({
+							message: `Thank you for your gift!`,
+							callback: () => {
+								window.location.reload();
+							}
+						});
+					}).catch(console.error);
+				}
+			});
+
+			// Open Checkout with further options:
+			handler.open({
+				name: 'Give to this Dare',
+				description: `Benefiting ${data.charity.name}`,
+				amount: giveAmount,
+				email: user.email
+			});
+
+			// Close Checkout on page navigation:
+			window.addEventListener('popstate', function() {
+				handler.close();
+			});
+		}
+		
+		function main(user) {
+			const DARE_ID = getQueryParams(document.location.search).dare;
+			$.ajax({
+				type: 'GET',
+				url: `${SERVER_URL}/dares/data/${DARE_ID}/?deep=true`
+			}).then((data) => {
+
+				document.getElementById('customButton').addEventListener('click', function(e) {
+					promptGive(data, user);
+					e.preventDefault();
+				});
+
+				if (user.id === data.dare.daredevil) {
+					document.querySelector('#daredevil-center').style.display = 'block';
+					document.querySelector('#record-btn').addEventListener('click', (e) => {
+						window.location = `record.html?dare=${data.dare.id}`;
+					});
+				}
+
+				if (data.dare.video) {
+					document.querySelector('#dare-video').src = `${SERVER_URL}/video/view/${data.dare.id}`;
+					document.querySelector('#dare-video-holder').style.display = 'block';
+				}
+
+				console.log(data);
+				document.querySelector('#dare-name').innerText = data.dare.name;
+				document.querySelector('#dare-description').innerText = data.dare.description;
+				document.querySelector('#dare-charity').innerText = data.charity.name;
+				document.querySelector('#dare-daredevil').style.backgroundImage = `url('${data.daredevil.photo}')`;
+
+				document.querySelector('#charity-name').innerText = data.charity.name;
+				document.querySelector('#charity-description').innerText = data.charity.description
+				document.querySelector('#charity-category').innerText = data.charity.category;
+
+				const sum = data.donations.reduce((agg, val) => {
+					return agg + val.amount;
+				}, 0);
+				document.querySelector('#dare-raised').innerText = (sum / 100).toFixed(2);
+				document.querySelector('#dare-backed').innerText = Object.keys(data.donors).length;
+				document.querySelector('#dare-percentage').innerText = ((sum / data.dare.threshold) * 100).toFixed(0);
+				document.querySelector('#dare-goal').innerText = (data.dare.threshold / 100).toFixed(0);
+				const profileHolder = document.querySelector('#dare-backers-profiles');
+				for (let donorID in data.donors) {
+					const img = data.donors[donorID].photo;
+					profileHolder.innerHTML += `<div class="profile-picture smol" style="background-image: url('${img}');"></div>`
+				}
+
+			}).catch(console.error);
+		}
+
+		checkLogin().then((user) => {
+			main(user);
+		}).catch((err) => {
+			console.error(err);
+			window.location = 'login.html';
+		});
+
+	</script>
+</body>
+</html>
