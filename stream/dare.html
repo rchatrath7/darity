@@ -281,7 +281,7 @@
 				document.querySelector('#messenger-btn').addEventListener('click', (e) => {
 					FB.ui({
 						method: 'send',
-						href: `${SERVER_URL}/share/${data.dare.id}?uid=${user.id}`
+						link: `${SERVER_URL}/share/${data.dare.id}?uid=${user.id}`
 					}, function(response){});
 				});
 
