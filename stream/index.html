@@ -9,6 +9,10 @@
 	<script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
     <style>
+        .column {
+            text-align: center; 
+        }
+
         .centered-content {
             display: flex; 
             flex-flow: column; 
@@ -16,22 +20,40 @@
         }
 
         .feed-card {
-            max-width: 400px; 
+            max-width: 480px; 
             border-radius: 8px; 
             margin: 10px; 
         }
+
+        .graphic {
+            background: url("defaultback.png") no-repeat fixed center;
+            padding: 10px; 
+            color:  hsl(171, 100%, 41%);
+        }
+
+        .title {
+            color:  hsl(171, 100%, 41%); 
+        }
+
+        .subtitle {
+            color:  hsl(171, 100%, 41%);
+        } 
     </style>
 </head>
 <body>
 	<script type="text/javascript" src="./fb.js"></script>
-    <section class="section">
-        <div class="container centered-content">
-	        <h1>Darity</h1>
-	        <p id="account-name"></p>
-	        <h2>Recommended Dares</h2>
-            <div id="feed"></div>
-	        <h2>All Dares</h2>
+    <div class="columns">    
+        <div class="column is-one-quarter graphic">
+	        <h1 class="title">Darity</h1>
+	        <p class="subtitle" id="account-name"></p>
+	    </div>
+        <div class="column">
+            <h1 class="title">All Dares</h1>
             <div id="all"></div>
+        </div>
+        <div class="column">
+	        <h1 class="title">Recommended Dares</h1>
+            <div id="feed"></div>
         </div>
     </section>
 	<script type="text/javascript" src="./global.js"></script>
