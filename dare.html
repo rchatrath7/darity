@@ -35,6 +35,13 @@
 			background-size: 50px;
 		}
 
+		.profile-picture.smoller {
+			margin-top: 5px;
+			width: 35px;
+			height: 35px;
+			background-size: 35px;
+		}
+
 		.is-banner {
 			background: url('defaultback.png'); no-repeat center center fixed;
 			-webkit-background-size: cover;
@@ -75,6 +82,10 @@
 			margin-bottom: 10px !important;
 		}
 
+		.navbar-item span {
+			margin: 0 5px;
+		}
+
 	</style>
 </head>
 <body>
@@ -82,6 +93,28 @@
 	<script src="https://checkout.stripe.com/checkout.js"></script>
 
 	<section class="hero is-medium is-primary is-banner">
+		<nav class="navbar is-transparent">
+			<div class="navbar-brand">
+				<a class="navbar-item" href="./">
+					<span class="icon">
+						<i class="fa fa-home"></i>
+					</span>
+					<span>
+						<h1 class="title is-5">Darity</h1>
+					</span>
+				</a>
+			</div>
+			<div class="navbar-end">
+				<div class="navbar-item">
+					<span>
+						<p class="subtitle is-6" id="account-name"></p>
+					</span>
+					<span>
+						<div class="profile-picture smoller" id="account-photo"></div>
+					</span>
+				</div>
+			</div>
+		</nav>
 		<div class="hero-body">
 			<div class="container">
 				<div class="level">
@@ -286,6 +319,9 @@
 				document.querySelector('#dare-description').innerText = data.dare.description;
 				document.querySelector('#dare-charity').innerText = data.charity.name;
 				document.querySelector('#dare-daredevil').style.backgroundImage = `url('${data.daredevil.photo}')`;
+
+				document.querySelector('#account-name').innerText = user.name;
+				document.querySelector('#account-photo').style.backgroundImage = `url('${user.photo}')`;
 
 				document.getElementById('customButton').addEventListener('click', function(e) {
 					promptGive(data, user);
