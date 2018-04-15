@@ -139,9 +139,8 @@ app.post('/login', function(request, response) {
 	}
 });
 
-app.get('/profile', function(request, response) {
-	const query = request.query;
-	const uid = query.id;
+app.get('/profile/view/:id', function(request, response) {
+	const uid = request.params.id;
 	if (uid) {
 		db.ref(`users/${uid}`).once('value', (snap) => {
 			const profile = snap.val() || false;
@@ -251,6 +250,32 @@ app.get('/dares/view/:id', function(request, response) {
 			error: 'Missing dare id.'
 		});
 	}
+});
+
+app.get('/dares/daredevil/:id', function(request, response) {
+	const id = request.params.id;
+	let ref = db.ref('dares').orderByChild('daredevil').equalTo(id);
+	ref.once('value', (snap) => {
+		const val = snap.val() || {};
+		const list = Object.keys(val).map((key) => {
+			let record = val[key];
+			record.id = key;
+			return record;
+		});
+		response.send(list);
+	});
+});
+
+app.get('/dares/all', function(request, response) {
+	db.ref('dares').once('value', (snap) => {
+		const val = snap.val() || {};
+		const list = Object.keys(val).map((key) => {
+			let record = val[key];
+			record.id = key;
+			return record;
+		});
+		res.send(list);
+	})
 });
 
 function saveDareRevision(id, dareData) {
