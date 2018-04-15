@@ -7,22 +7,55 @@
 	<title>Darity</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
+    <style>
+        .centered-content {
+            display: flex; 
+            flex-flow: column; 
+            align-items: center; 
+        }
+
+        .feed-card {
+            max-width: 400px; 
+            border-radius: 8px; 
+            margin: 10px; 
+        }
+    </style>
 </head>
 <body>
 	<script type="text/javascript" src="./fb.js"></script>
-	<h1>Darity</h1>
-	<p id="account-name"></p>
-	<h2>Recommended Dares</h2>
-	<ul id="feed"></ul>
-	<h2>All Dares</h2>
-	<ul id="all"></ul>
+    <section class="section">
+        <div class="container centered-content">
+	        <h1>Darity</h1>
+	        <p id="account-name"></p>
+	        <h2>Recommended Dares</h2>
+            <div id="feed"></div>
+	        <h2>All Dares</h2>
+            <div id="all"></div>
+        </div>
+    </section>
 	<script type="text/javascript" src="./global.js"></script>
 	<script type="text/javascript">
 
 		function renderDareList(holder, list) {
 			list.forEach((dare) => {
-				const link = `http://${document.location.host}${document.location.pathname}/dare.html?dare=${dare.id}`;
-				holder.innerHTML += `<li><a href="${link}">${dare.name}</a></li>`;
+				const link = `http://${document.location.host}${document.location.pathname}/dare.html?dare=${dare.dare.id}`;
+                const dareString = `<div class="card feed-card">
+                    <header class="card-header">
+                        <h1 class="card-header-title"><a href="${link}">${dare.dare.name}</a></h1>
+                    </header>
+                    <div class="card-content">
+                        <div class="content">
+                            <p>${dare.dare.description}</p>
+                        </div> 
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-footer-item">${dare.daredevil.name}</span>
+                        <span class="card-footer-item">${dare.charity.name}</span>
+                        <span class="card-footer-item">Goal: ${dare.dare.threshold}</span>
+                    </div>
+                </div>`
+                holder.innerHTML += dareString;
 			});
 		}
 		
@@ -32,11 +65,11 @@
 				type: 'GET',
 				url: `${SERVER_URL}/recommendations/${user.id}`
 			}).then((data) => {
-				renderDareList(document.querySelector('#feed'), data.dares);
+				renderDareList(document.querySelector('#feed'), data);
 			}).catch(console.error);
 			$.ajax({
 				type: 'GET',
-				url: `${SERVER_URL}/dares/all`
+				url: `${SERVER_URL}/dares/detailed`
 			}).then((data) => {
 				renderDareList(document.querySelector('#all'), data);
 			}).catch(console.error);
