@@ -58,7 +58,7 @@ function checkLogin() {
 				id: "Hsv6bQodv5Vyvhsm0vpWAy5uAyP2",
 				name: "Vinesh Kannan",
 				email: "kannanvineshg@gmail.com",
-				photo: "https://lookaside.facebook.com/platform/profilepic…00&width=100&ext=1524006474&hash=AeSAMMTxg-TCsvse",
+				photo: "https://lookaside.facebook.com/platform/profilepic/?asid=1384593731686462&height=100&width=100&ext=1524006474&hash=AeSAMMTxg-TCsvse",
 				provider: "facebook"
 			});
 		} else {
@@ -67,6 +67,10 @@ function checkLogin() {
 					//console.log('User signed in.');
 					//console.log(user);
 					const userData = getUserData(user);
+					$.ajax({
+						type: 'POST',
+						url: `${SERVER_URL}/login?${$.param(userData)}`
+					}).then(console.log).catch(console.error);
 					resolve(userData);
 				} else {
 					reject('No user signed in.');

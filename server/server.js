@@ -45,6 +45,28 @@ const videoStorage = multer.diskStorage({
 });
 const videoUpload = multer({storage: videoStorage}).single('data');
 
+app.get('/share/:dare', function(request, response) {
+	const dare = request.params.dare;
+	const referrer = request.query.uid || false;
+	response.redirect(`${process.env.CLIENT_URL}/dare/${dare}?shared=${referrer}`);
+});
+
+app.post('/share/create', function(request, response) {
+	const dare = request.query.dare;
+	const user = request.query.user;
+	const referrer = request.query.referrer;
+	db.ref('shares').push({
+		user: user,
+		referrer: referrer,
+		dare: dare,
+		timestamp: Date.now()
+	}).then((done) => {
+		res.send({
+			success: true
+		});
+	});
+});
+
 app.get('/hello', function(request, response) {
 	response.send({
 		value: 'Hello World!'
@@ -122,6 +144,15 @@ app.post('/donations/create/:id', function(request, response) {
 		});
 	}
 });
+
+function getUserProfile(uid) {
+	return new Promise((resolve, reject) => {
+		db.ref(`users/${uid}`).once('value', (snap) => {
+			const user = snap.val() || {};
+			resolve(user);
+		});
+	});
+}
 
 app.post('/login', function(request, response) {
 	const query = request.query;
@@ -216,15 +247,16 @@ app.get('/dares/data/:id', function(request, response) {
 		db.ref(`dares/${id}`).once('value', (snap) => {
 			const dareData = snap.val() || false;
 			if (dareData) {
-				const promises = [getCharity(dareData.charity), getDonationList(id)];
+				const promises = [getCharity(dareData.charity), getDonationList(id), getUserProfile(dareData.daredevil)];
 				if (deep) {
 					promises.push(getUserMap());
 				}
 				Promise.all(promises).then((resData) => {
 					const charityRes = resData[0];
 					const listRes = resData[1];
+					const daredevil = resData[2];
 					if (deep) {
-						const userMap = resData[2];
+						const userMap = resData[3];
 						const donorMap = listRes.list.reduce((agg, val) => {
 							if (val.user in userMap) {
 								agg[val.user] = userMap[val.user]
@@ -233,6 +265,7 @@ app.get('/dares/data/:id', function(request, response) {
 						}, {});
 						response.send({
 							dare: dareData,
+							daredevil: daredevil,
 							donations: listRes.list,
 							charity: charityRes.charity,
 							donors: donorMap
@@ -409,7 +442,7 @@ app.get('/video/view/:id', function(request, response) {
 	db.ref(`dares/${id}/video`).once('value', (snap) => {
 		const url = snap.val();
 		if (url) {
-			response.redirect(`${process.env.HOST}/${url}`);
+			response.redirect(`${process.env.SERVER_URL}/${url}`);
 		} else {
 			response.send({
 				success: false,

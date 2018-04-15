@@ -7,12 +7,61 @@
 	<title>Darity</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
+	<style type="text/css">
+		
+		.profile-picture {
+			border-radius: 50%;
+			margin: 5px;
+			width: 50px;
+			height: 50px;
+			display: inline-block;
+			background-size: 50px;
+		}
+
+	</style>
 </head>
 <body>
 	<script type="text/javascript" src="./fb.js"></script>
 	<h1 id="dare-name"></h1>
-	<h2 id="dare-description"></h2>
+	<h2 id="dare-charity"></h2>
+	<hr>
+	<h3>$<span id="dare-raised"></span> raised from <span id="dare-backed"></span> people</h3>
+	<div id="dare-backers-profiles"></div>
+	<p id="dare-description"></p>
 	<script type="text/javascript" src="./global.js"></script>
-	<script type="text/javascript" src="./dare.js"></script>
+	<script type="text/javascript">
+		
+		function main(user) {
+			const DARE_ID = getQueryParams(document.location.search).dare;
+			$.ajax({
+				type: 'GET',
+				url: `${SERVER_URL}/dares/data/${DARE_ID}/?deep=true`
+			}).then((data) => {
+				console.log(data);
+				document.querySelector('#dare-name').innerText = data.dare.name;
+				document.querySelector('#dare-description').innerText = data.dare.description;
+				document.querySelector('#dare-charity').innerText = data.charity.name;
+				const sum = data.donations.reduce((agg, val) => {
+					return agg + val.amount;
+				}, 0);
+				document.querySelector('#dare-raised').innerText = (sum / 100).toFixed(2);
+				document.querySelector('#dare-backed').innerText = Object.keys(data.donors).length;
+				const profileHolder = document.querySelector('#dare-backers-profiles');
+				for (let donorID in data.donors) {
+					const img = data.donors[donorID].photo;
+					profileHolder.innerHTML += `<div class="profile-picture" style="background-image: url('${img}');"></div>`
+				};
+				
+			}).catch(console.error);
+		}
+
+		checkLogin().then((user) => {
+			main(user);
+		}).catch((err) => {
+			console.error(err);
+			window.location = 'login.html';
+		});
+
+	</script>
 </body>
 </html>
