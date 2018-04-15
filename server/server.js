@@ -48,13 +48,13 @@ const videoUpload = multer({storage: videoStorage}).single('data');
 app.get('/share/:dare', function(request, response) {
 	const dare = request.params.dare;
 	const referrer = request.query.uid || false;
-	response.redirect(`${process.env.CLIENT_URL}/dare/${dare}?shared=${referrer}`);
+	response.redirect(`${process.env.CLIENT_URL}/dare.html?dare=${dare}&shared=${referrer}`);
 });
 
 app.post('/share/create', function(request, response) {
 	const dare = request.query.dare;
 	const user = request.query.user;
-	const referrer = request.query.referrer;
+	const referrer = request.query.referrer || false;
 	db.ref('shares').push({
 		user: user,
 		referrer: referrer,

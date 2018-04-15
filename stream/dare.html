@@ -271,7 +271,9 @@
 		}
 		
 		function main(user) {
-			const DARE_ID = getQueryParams(document.location.search).dare;
+			const qps = getQueryParams(document.location.search);
+			const DARE_ID = qps.dare;
+
 			$.ajax({
 				type: 'GET',
 				url: `${SERVER_URL}/dares/data/${DARE_ID}/?deep=true`
@@ -303,7 +305,8 @@
 				document.querySelector('#facebook-btn').addEventListener('click', (e) => {
 					FB.ui({
 						method: 'share',
-						href: `${SERVER_URL}/share/${data.dare.id}?uid=${user.id}`
+						href: `${SERVER_URL}/share/${data.dare.id}?uid=${user.id}`,
+						quote: `Check out ${data.daredevil.name.split(' ')[0]}'s dare to raise money for ${data.charity.name}!`,
 					}, function(response){});
 				});
 
@@ -312,6 +315,13 @@
 						method: 'send',
 						link: `${SERVER_URL}/share/${data.dare.id}?uid=${user.id}`
 					}, function(response){});
+				});
+
+				document.querySelector('#twitter-btn').addEventListener('click', (e) => {
+					window.open(`https://twitter.com/intent/tweet?${$.param({
+						text: `Check out ${data.daredevil.name.split(' ')[0]}'s dare to raise money for ${data.charity.name}!`,
+						url: `${SERVER_URL}/share/${data.dare.id}?uid=${user.id}`
+					})}`);
 				});
 
 				document.querySelector('#charity-name').innerText = data.charity.name;
@@ -363,6 +373,17 @@
 				});
 
 			}).catch(console.error);
+
+			const referrer = qps.shared;
+			$.ajax({
+				type: 'POST',
+				url: `${SERVER_URL}/share/create?=${$.param({
+					dare: DARE_ID,
+					user: user.id,
+					referrer: referrer
+				})}`
+			});
+
 		}
 
 		checkLogin().then((user) => {
