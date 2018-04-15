@@ -48,8 +48,38 @@ app.get('/hello', function(request, response) {
 	});
 });
 
+app.post('/give', function(request, response) {
+	const query = request.query;
+	const dareid = query.dare;
+	const userid = query.user;
+	const amount = parseFloat(query.amount);
+	if (!userid || !dareid || !amount) {
+		response.send({
+			success: false,
+			error: 'Must provide user id, dare id, and amount.'
+		});
+	} else {
+		const donationData = {
+			dare: dareid,
+			user: userid,
+			amount: amount,
+			timestamp: Date.now()
+		};
+		db.ref(`donations`).push(donationData).then((done) => {
+			response.send({
+				success: true
+			});
+		}).catch((error) => {
+			response.send({
+				success: false,
+				error: `DatabaseError: ${error}`
+			});
+		});
+	}
+});
+
 app.post('/login', function(request, response) {
-	const query = request.body;
+	const query = request.query;
 	const uid = query.id;
 	if (!uid) {
 		response.send({
