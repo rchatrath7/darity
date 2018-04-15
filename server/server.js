@@ -190,7 +190,7 @@ app.post('/dares/update/:id', function(request, response) {
 	if (!id) {
 		response.send({
 			success: false,
-			error: 'Missing user id.'
+			error: 'Missing dare id.'
 		});
 	} else {
 		db.ref(`dares/${id}`).once('value', (snap) => {
@@ -200,6 +200,34 @@ app.post('/dares/update/:id', function(request, response) {
 			}
 			db.ref(`dares/${id}`).set(val).then((done) => {
 				saveDareRevision(id, val);
+				response.send({
+					success: true
+				});
+			}).catch((error) => {
+				response.send({
+					success: false,
+					error: `DatabaseError: ${error}`
+				});
+			});
+		});
+	}
+});
+
+app.post('/charities/update/:id', function(request, response) {
+	const id = request.params.id;
+	const query = request.query;
+	if (!id) {
+		response.send({
+			success: false,
+			error: 'Missing charity id.'
+		});
+	} else {
+		db.ref(`charities/${id}`).once('value', (snap) => {
+			const val = snap.val() || {};
+			for (let attr in query) {
+				val[attr] = query[attr];
+			}
+			db.ref(`charities/${id}`).set(val).then((done) => {
 				response.send({
 					success: true
 				});
