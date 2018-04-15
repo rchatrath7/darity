@@ -5,16 +5,35 @@ import { withStyles } from 'material-ui/styles';
 import withRoot from '../../../util/withRoot';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney'; 
 import AllInclusiveIcon from '@material-ui/icons/AllInclusive'; 
-import Background from '../../../images/Trades/Splash/filthywhore.svg'; 
+import IconButton from 'material-ui/IconButton'; 
+import Background from '../../../images/Trades/Splash/filthywhore.svg';
 
 const styles = theme => ({
+  
+  tolButton: {
+    width: 175, 
+    height: 175, 
+    margin: '0 30',
+    padding: '0 20', 
+  },
+
   icon: {
-    color: theme.palette.secondary.main, 
+    color: theme.palette.secondary.main,
+    width: 35, 
+    height: 35, 
   },
 
   graphic: {
-    bacgroundImage: "url(" + Background + ")", 
-    transform: "rotate(-90deg)", 
+    display: 'inline-block', 
+    width: 115, 
+    height: 12, 
+    backgroundImage: "url(" + Background + ")",
+    backgroundRepeat: 'no-repeat', 
+  },
+
+  tol: {
+    margin: '0 15', 
+    fontSize: '3.5rem',
   },
 
 });
@@ -25,9 +44,9 @@ class Stats extends React.Component {
 
     return (
       <div>
-        <IconButton><AllInclusiveIcon className={classes.icon} /><Typography component="h1">12</Typography></IconButton>
+        <IconButton className={classes.tolButton}><AllInclusiveIcon className={classes.icon} /><Typography className={classes.tol} component="h1">12</Typography></IconButton>
         <div className={classes.graphic}></div>
-        <IconButton><AttachMoneyIcon className={classes.icon} /><Typography component="h1">20.0</Typography></IconButton>
+        <IconButton className={classes.tolButton}><AttachMoneyIcon className={classes.icon} /><Typography className={classes.tol} component="h1">20</Typography></IconButton>
       </div>
     )
   }

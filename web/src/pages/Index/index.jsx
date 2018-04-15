@@ -10,14 +10,18 @@ import Dialog, {
 import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/styles';
 import withRoot from '../../util/withRoot';
+import Grid from 'material-ui/Grid'; 
 import Summary from '../../components/Trades/Summary/Summary'; 
 import Charity from '../../components/Trades/Charity/Charity';
 import Splash from '../../components/Trades/Splash/Splash'; 
+import Stats from '../../components/Trades/Stats/Stats'; 
 
 const styles = theme => ({
-  root: {
-    paddingTop: theme.spacing.unit * 20,
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center', 
   },
+
 });
 
 class Index extends React.Component {
@@ -44,6 +48,14 @@ class Index extends React.Component {
     return (
       <div>
         <Splash /> 
+        <Grid className={classes.centered} container spacing={12}> 
+          <Grid item xs={4}> 
+            <Stats /> 
+          </Grid>
+          <Grid item xs={4}>
+            <Charity /> 
+          </Grid>
+        </Grid>
       </div>
     );
   }
