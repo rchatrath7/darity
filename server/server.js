@@ -200,21 +200,50 @@ function getCharity(id) {
 	});
 }
 
+function getUserMap() {
+	return new Promise((resolve, reject) => {
+		db.ref('users').once('value', (snap) => {
+			const val = snap.val() || {};
+			resolve(val);
+		});
+	});
+}
+
 app.get('/dares/data/:id', function(request, response) {
 	const id = request.params.id;
+	const deep = request.query.deep || false;
 	if (id) {
 		db.ref(`dares/${id}`).once('value', (snap) => {
 			const dareData = snap.val() || false;
 			if (dareData) {
 				const promises = [getCharity(dareData.charity), getDonationList(id)];
+				if (deep) {
+					promises.push(getUserMap());
+				}
 				Promise.all(promises).then((resData) => {
 					const charityRes = resData[0];
 					const listRes = resData[1];
-					response.send({
-						dare: dareData,
-						donations: listRes.list,
-						charity: charityRes.charity
-					});
+					if (deep) {
+						const userMap = resData[2];
+						const donorMap = listRes.list.reduce((agg, val) => {
+							if (val.user in userMap) {
+								agg[val.user] = userMap[val.user]
+							}
+							return agg;
+						}, {});
+						response.send({
+							dare: dareData,
+							donations: listRes.list,
+							charity: charityRes.charity,
+							donors: donorMap
+						});
+					} else {
+						response.send({
+							dare: dareData,
+							donations: listRes.list,
+							charity: charityRes.charity
+						});
+					}
 				}).catch((error) => {
 					response.send({
 						success: false,
