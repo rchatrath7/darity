@@ -39,7 +39,8 @@ const videoStorage = multer.diskStorage({
 		cb(null, __dirname + `/${PUBLIC_DIR}/${VIDEO_DIR}`);
 	},
 	filename: function (req, file, cb) {
-		cb(null, `${req.body.uid}-${Date.now()}.webm`);
+		//cb(null, `${req.body.uid}-${Date.now()}.webm`);
+		cb(null, `${req.body.dare}.webm`);
 	}
 });
 const videoUpload = multer({storage: videoStorage}).single('data');
@@ -241,13 +242,48 @@ app.post('/charities/update/:id', function(request, response) {
 	}
 });
 
-app.post('/video', videoUpload, function(request, response) {
+app.get('/video/view/:id', function(request, response){
+	const id = request.params.id;
+	db.ref(`dares/${id}/video`).once('value', (snap) => {
+		const url = snap.val();
+		if (url) {
+			response.redirect(`${process.env.HOST}/${url}`);
+		} else {
+			response.send({
+				success: false,
+				error: 'There is no video for this dare yet.'
+			});
+		}
+	});
+});
+
+app.post('/video/upload', videoUpload, function(request, response){
 	console.log(request.body);
 	console.log(request.file);
 	const file = request.file;
-	response.send({
-		success: true,
-		url: `${VIDEO_DIR}/${file.filename}`
+	const userid = request.body.user;
+	const dareid = request.body.dare;
+	const videoURL = `${VIDEO_DIR}/${file.filename}`;
+	db.ref(`dares/${dareid}`).once('value', (snap) => {
+		const val = snap.val() || {};
+		if (val.daredevil === userid) {
+			db.ref(`dares/${dareid}/video`).set(videoURL).then((done) => {
+				response.send({
+					success: true,
+					url: videoURL
+				});
+			}).catch((error) => {
+				response.send({
+					success: false,
+					error: `DatabaseError: ${error}`
+				});
+			})
+		} else {
+			response.send({
+				success: false,
+				error: 'User is not the daredevil for this dare.'
+			});
+		}
 	});
 });
 
