@@ -7,9 +7,13 @@ import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import AllInclusiveIcon from '@material-ui/icons/AllInclusive'; 
 import IconButton from 'material-ui/IconButton'; 
 import Background from '../../../images/Trades/Splash/filthywhore.svg';
+import { LinearProgress } from 'material-ui/Progress'; 
 
 const styles = theme => ({
-  
+  padded: {
+    padding: 20, 
+  },
+
   tolButton: {
     width: 175, 
     height: 175, 
@@ -39,14 +43,19 @@ const styles = theme => ({
 });
 
 class Stats extends React.Component {
+  state = {
+    completed: 50, 
+  }
+  
   render() {
     const { classes } = this.props; 
 
     return (
-      <div>
+      <div className={classes.padded}>
         <IconButton className={classes.tolButton}><AllInclusiveIcon className={classes.icon} /><Typography className={classes.tol} component="h1">12</Typography></IconButton>
         <div className={classes.graphic}></div>
         <IconButton className={classes.tolButton}><AttachMoneyIcon className={classes.icon} /><Typography className={classes.tol} component="h1">20</Typography></IconButton>
+        <LinearProgress variant="indeterminant" value={this.state.completed}></LinearProgress>
       </div>
     )
   }
