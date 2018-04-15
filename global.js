@@ -51,7 +51,7 @@ function getUserData(source) {
 
 function checkLogin() {
 	return new Promise((resolve, reject) => {
-		if (localStorage.getItem('local')) {
+		if (localStorage.getItem('local') === 'darity') {
 			resolve({
 				id: "Hsv6bQodv5Vyvhsm0vpWAy5uAyP2",
 				name: "Vinesh Kannan",
