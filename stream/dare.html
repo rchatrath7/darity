@@ -13,7 +13,8 @@
 	<link rel="stylesheet" type="text/css" href="./vex/vex-theme-plain.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
 	<script defer src="https://use.fontawesome.com/releases/v5.0.10/js/all.js" integrity="sha384-slN8GvtUJGnv6ca26v8EzVaR9DC58QEwsIk9q1QXdCU8Yu8ck/tL/5szYlBbqmS+" crossorigin="anonymous"></script>
-	<style type="text/css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <style type="text/css">
 		
 		.profile-picture {
 			border-radius: 50%;
@@ -124,10 +125,14 @@
 							<h3><span id="dare-percentage"></span>% of $<span id="dare-goal"></span> goal</h3>
 						</div>
 					</div>
-					
-				</div>
-				<div class="column is-6">
-					<div id="daredevil-center">
+				    <div class="card">
+                        <div class="card-content">
+                            <canvas id="canvas"></canvas> 
+                        </div> 
+                    </div>	
+                </div> 
+                <div class="column is-6">
+                    <div id="daredevil-center">
 						<div class="card">
 							<div class="card-content">
 								<h2>Daredevil</h2>
@@ -293,6 +298,55 @@
 					profileHolder.innerHTML += `<div class="profile-picture smol" style="background-image: url('${img}');"></div>`
 				}
 
+                const timeData = data.donations.map((val) => {
+                    return {x: new Date(val.timestamp), y: val.amount};
+                });
+
+                var ctx = document.getElementById('canvas').getContext('2d');
+
+                var chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            label: 'Amount raised over time', 
+                            backgroundColor: 'black', 
+                            borderColor: 'white', 
+                            fill: false, 
+                            data: timeData, 
+                        }],
+                    }, 
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                scaleLabel: {
+                                    display: true, 
+                                    labelString: 'Date', 
+                                },
+                            }],
+                            yAxes: [{
+                                scaleLabel: {
+                                    display: true, 
+                                    labelString: 'Amount', 
+                                },
+                            }],
+                        },
+                        annotation: {
+                          annotations: [{
+                            type: 'line',
+                            mode: 'horizontal',
+                            scaleID: 'y-axis-0',
+                            value: 1000.6,
+                            borderColor: 'rgb(75, 192, 192)',
+                            borderWidth: 4,
+                            label: {
+                              content: 'Threshold'
+                            }
+                          }]
+                        }, 
+                    },
+                });
+
+                chart.update(); 
 			}).catch(console.error);
 		}
 
