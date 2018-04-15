@@ -10,11 +10,14 @@ import Dialog, {
 import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/styles';
 import withRoot from '../../util/withRoot';
+import Summary from '../../components/Trades/Summary/Summary'; 
 
 const styles = theme => ({
   root: {
-    textAlign: 'center',
+    backgroundColor: theme.palette.primary, 
     paddingTop: theme.spacing.unit * 20,
+    alignItems: 'start',
+    justifyContent: 'center', 
   },
 });
 
@@ -41,26 +44,7 @@ class Index extends React.Component {
 
     return (
       <div className={classes.root}>
-        <Dialog open={open} onClose={this.handleClose}>
-          <DialogTitle>Super Secret Password</DialogTitle>
-          <DialogContent>
-            <DialogContentText>1-2-3-4-5</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button color="primary" onClick={this.handleClose}>
-              OK
-            </Button>
-          </DialogActions>
-        </Dialog>
-        <Typography variant="display1" gutterBottom>
-          Material-UI
-        </Typography>
-        <Typography variant="subheading" gutterBottom>
-          example project
-        </Typography>
-        <Button variant="raised" color="secondary" onClick={this.handleClick}>
-          Super Secret Password
-        </Button>
+        <Summary /> 
       </div>
     );
   }
