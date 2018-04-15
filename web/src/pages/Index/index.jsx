@@ -9,7 +9,7 @@ import Dialog, {
 } from 'material-ui/Dialog';
 import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/styles';
-import withRoot from '../withRoot';
+import withRoot from '../../util/withRoot';
 
 const styles = theme => ({
   root: {
