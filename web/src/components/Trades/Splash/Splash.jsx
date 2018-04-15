@@ -5,12 +5,14 @@ import { withStyles } from 'material-ui/styles';
 import withRoot from '../../../util/withRoot';
 import Grid from 'material-ui/Grid'; 
 import Avatar from 'material-ui/Avatar';
+import Background from '../../../images/Trades/Splash/stealingfromgitcoinzoth.png';
 
 const styles = theme => ({
 
   container: {
     justifyContent: 'center',
-    height: '75vh', 
+    height: '75vh',
+    backgroundImage: "url(" + Background + ")", 
   },
 
   avatar: {
@@ -24,7 +26,8 @@ const styles = theme => ({
     padding: 30,
     display: 'flex',
     flexFlow: 'column',
-    justifyContent: 'center', 
+    justifyContent: 'center',
+    color: 'white', 
   },
 
   imageContainer: {
@@ -34,11 +37,14 @@ const styles = theme => ({
   },
 
   tol: {
-    fontSize: '2.5em', 
+    fontSize: '2.5em',
+    color: theme.palette.tertiary.light,
+    fontWeight: 'bold', 
   }, 
 
   lessTol: {
-    fontSize: '2em', 
+    fontSize: '2em',
+    color: theme.palette.secondary.light, 
   },
 });
 
