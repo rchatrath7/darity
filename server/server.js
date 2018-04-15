@@ -51,6 +51,28 @@ app.get('/hello', function(request, response) {
 	});
 });
 
+app.get('/donations/all', function(request, response) {
+	db.ref('dares').once('value', (snap) => {
+		const dareMap = snap.val() || {};
+		getDonationList(null).then((listRes) => {
+			const donationList = listRes.list.filter((record) => {
+				return record.dare in dareMap;
+			}).map((record) => {
+				record.charity = dareMap[record.dare].charity;
+				return record;
+			});
+			response.send({
+				donations: donationList
+			});	
+		}).catch((error) => {
+			response.send({
+				success: false,
+				error: `DatabaseError: ${error}`
+			});
+		});
+	});
+});
+
 app.post('/give', function(request, response) {
 	const query = request.query;
 	const dareid = query.dare;
@@ -142,7 +164,10 @@ app.get('/profile', function(request, response) {
 
 function getDonationList(id) {
 	return new Promise((resolve, reject) => {
-		const ref = db.ref(`donations`).orderByChild('dare').equalTo(id);
+		let ref = db.ref(`donations`);
+		if (id) {
+			ref = ref.orderByChild('dare').equalTo(id);
+		}
 		ref.once('value', (donationSnap) => {
 			const donationVal = donationSnap.val() || {};
 			const donationList = Object.keys(donationVal).map((key) => {
@@ -280,6 +305,17 @@ app.post('/dares/update/:id', function(request, response) {
 	}
 });
 
+app.get('/charities/view/:id', function(request, response) {
+	getCharity(request.params.id).then((res) => {
+		response.send(res.charity);
+	}).catch((error) => {
+		response.send({
+			success: false,
+			error: `DatabaseError: ${error}`
+		});
+	});
+});
+
 app.post('/charities/update/:id', function(request, response) {
 	const id = request.params.id;
 	const query = request.query;
@@ -308,7 +344,7 @@ app.post('/charities/update/:id', function(request, response) {
 	}
 });
 
-app.get('/video/view/:id', function(request, response){
+app.get('/video/view/:id', function(request, response) {
 	const id = request.params.id;
 	db.ref(`dares/${id}/video`).once('value', (snap) => {
 		const url = snap.val();
@@ -323,7 +359,7 @@ app.get('/video/view/:id', function(request, response){
 	});
 });
 
-app.post('/video/upload', videoUpload, function(request, response){
+app.post('/video/upload', videoUpload, function(request, response) {
 	console.log(request.body);
 	console.log(request.file);
 	const file = request.file;
