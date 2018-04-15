@@ -12,6 +12,7 @@
 	<link rel="stylesheet" type="text/css" href="./vex/vex.css">
 	<link rel="stylesheet" type="text/css" href="./vex/vex-theme-plain.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
+	<script defer src="https://use.fontawesome.com/releases/v5.0.10/js/all.js" integrity="sha384-slN8GvtUJGnv6ca26v8EzVaR9DC58QEwsIk9q1QXdCU8Yu8ck/tL/5szYlBbqmS+" crossorigin="anonymous"></script>
 	<style type="text/css">
 		
 		.profile-picture {
@@ -53,6 +54,14 @@
 			display: none;
 		}
 
+		#dare-video {
+			margin-bottom: 10px;
+		}
+
+		.buttons-block button {
+			margin-top: 10px;
+		}
+
 	</style>
 </head>
 <body>
@@ -92,8 +101,22 @@
 							<p id="dare-description"></p>
 							<div id="dare-video-holder">
 								<h2>Video</h2>
-								<p>They did it!</p>
 								<video id="dare-video" controls></video>
+								<div class="level">
+									<div class="level-left">
+										<div class="level-item">
+											<button class="button is-primary is-outlined">
+												<span class="icon">
+													<i class="fa fa-thumbs-up"></i>
+												</span>
+												<span>Confirm Dare</span>
+											</button>
+										</div>
+										<div class="level-item">
+											<p>Did you think they did well enough?</p>
+										</div>
+									</div>
+								</div>
 							</div>
 							<h2>Progress</h2>
 							<h3>$<span id="dare-raised"></span> raised from <span id="dare-backed"></span> people</h3>
@@ -109,18 +132,51 @@
 							<div class="card-content">
 								<h2>Daredevil</h2>
 								<p>Ready to do the dare? Record it here.</p>
-								<button class="button is-primary" id="record-btn">Record Dare</button>
+								<button class="button is-primary is-outlined" id="record-btn">
+									<span class="icon">
+										<i class="fa fa-video"></i>
+									</span>
+									<span>Record Dare</span>
+								</button>
 							</div>
 						</div>
 						<br>
 					</div>
 					<div class="card">
 						<div class="card-content">
+							<h2>Sharing</h2>
+							<div class="buttons-block">
+								<button class="button is-info is-outlined" id="facebook-btn">
+									<span class="icon">
+										<i class="fab fa-facebook"></i>
+									</span>
+									<span>Share on Facebook</span>
+								</button>
+								<br>
+								<button class="button is-info is-outlined" id="messenger-btn">
+									<span class="icon">
+										<i class="fab fa-messenger"></i>
+									</span>
+									<span>Share on Messenger</span>
+								</button>
+								<br>
+								<button class="button is-info is-outlined" id="twitter-btn">
+									<span class="icon">
+										<i class="fab fa-twitter"></i>
+									</span>
+									<span>Share on Twitter</span>
+								</button>
+							</div>
+						</div>
+					</div>
+					<br>
+					<div class="card">
+						<div class="card-content">
 							<h2>Charity</h2>
 							<h3 id="charity-name">Charity Title</h3>
 							<p id="charity-description">Charity description.</p>
 							<div class="tags">
-								<span class="tag is-primary" id="charity-category">Category</span>
+								<span class="tag is-info" id="charity-category">Category</span>
 							</div>
 						</div>
 					</div>

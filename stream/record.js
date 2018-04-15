@@ -11,7 +11,6 @@ const buttonRecord = document.querySelector('#record');
 function main(user) {
 	startCamera();
 	const DARE_ID = getQueryParams(document.location.search).dare;
-	const dareid = 'sample';
 	const recordingTimeMS = 20 * 1000;
 	let startedRecording = false;
 	buttonRecord.addEventListener('click', (e) => {
@@ -19,9 +18,16 @@ function main(user) {
 			startedRecording = true;
 			buttonRecord.innerHTML = `<i class="fa fa-stop"></i>`;
 			doRecording(recordingTimeMS).then((blob) => {
-				saveRecording(dareid, user.id, blob).then((res) => {
+				vex.dialog.alert('Uploading dare video...');
+				saveRecording(DARE_ID, user.id, blob).then((res) => {
 					console.log('Video Link:', res.url);
-					prompt('Video Recorded:', res.url);
+					//prompt('Video Recorded:', res.url);
+					vex.dialog.alert({
+						message: 'Dare video uploaded!',
+						callback: () => {
+							window.location = `dare.html?dare=${DARE_ID}`;
+						}
+					});
 				});
 			}).catch(console.error);
 		} else {
