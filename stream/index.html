@@ -10,13 +10,45 @@
 </head>
 <body>
 	<script type="text/javascript" src="./fb.js"></script>
-	<div>
-		<button id="record">Record</button>  
-	</div>
-	<div>
-		<video autoplay></video>
-	</div>
+	<h1>Darity</h1>
+	<p id="account-name"></p>
+	<h2>Recommended Dares</h2>
+	<ul id="feed"></ul>
+	<h2>All Dares</h2>
+	<ul id="all"></ul>
 	<script type="text/javascript" src="./global.js"></script>
-	<script type="text/javascript" src="./main.js"></script>
+	<script type="text/javascript">
+
+		function renderDareList(holder, list) {
+			list.forEach((dare) => {
+				const link = `http://${document.location.host}${document.location.pathname}/dare.html?dare=${dare.id}`;
+				holder.innerHTML += `<li><a href="${link}">${dare.name}</a></li>`;
+			});
+		}
+		
+		function main(user) {
+			document.querySelector('#account-name').innerText = user.name;
+			$.ajax({
+				type: 'GET',
+				url: `${SERVER_URL}/recommendations/${user.id}`
+			}).then((data) => {
+				renderDareList(document.querySelector('#feed'), data.dares);
+			}).catch(console.error);
+			$.ajax({
+				type: 'GET',
+				url: `${SERVER_URL}/dares/all`
+			}).then((data) => {
+				renderDareList(document.querySelector('#all'), data);
+			}).catch(console.error);
+		}
+
+		checkLogin().then((user) => {
+			main(user);
+		}).catch((err) => {
+			console.error(err);
+			window.location = 'login.html';
+		});
+
+	</script>
 </body>
 </html>

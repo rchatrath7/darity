@@ -7,27 +7,88 @@
 	<title>Darity</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
 	<style type="text/css">
 		
 		.profile-picture {
 			border-radius: 50%;
+			display: inline-block;
+		}
+
+		.profile-picture.tol {
+			margin: 10px;
+			width: 100px;
+			height: 100px;
+			background-size: 100px;
+		}
+
+		.profile-picture.smol {
 			margin: 5px;
 			width: 50px;
 			height: 50px;
-			display: inline-block;
 			background-size: 50px;
+		}
+
+		.is-banner {
+			background-image: url('defaultback.png');
+			background-size: 100%;
+			background-position: center center;
+		}
+
+		.is-level-text .title, .is-level-text .subtitle {
+			margin: 25px 10px;
 		}
 
 	</style>
 </head>
 <body>
 	<script type="text/javascript" src="./fb.js"></script>
-	<h1 id="dare-name"></h1>
-	<h2 id="dare-charity"></h2>
-	<hr>
-	<h3>$<span id="dare-raised"></span> raised from <span id="dare-backed"></span> people</h3>
-	<div id="dare-backers-profiles"></div>
-	<p id="dare-description"></p>
+	
+	<section class="hero is-medium is-primary is-banner">
+		<div class="hero-body">
+			<div class="container">
+				<div class="level">
+					<div class="level-left">
+						<div class="level-item">
+							<div class="profile-picture tol" id="dare-daredevil"></div>
+						</div>
+						<div class="level-item">
+							<div class="is-level-text">
+								<h1 class="title is-2" id="dare-name"></h1>
+								<h2 class="subtitle is-3" id="dare-charity"></h2>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="section">
+		<div class="container content">
+			<div class="columns">
+				<div class="column is-6">
+					<h3>$<span id="dare-raised"></span> raised from <span id="dare-backed"></span> people</h3>
+					<div id="dare-backers-profiles"></div>
+					<p id="dare-description"></p>
+				</div>
+				<div class="column is-6">
+					<div class="card">
+						<div class="card-content">
+							<div class="media">
+								<div class="media-content">
+									<p class="title is-4" id="charity-name">Charity title</p>
+								</div>
+							</div>
+							<div class="content" id="charity-description">Charity description.</div>
+							<div class="tags">
+								<span class="tag is-primary" id="charity-category">Category</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 	<script type="text/javascript" src="./global.js"></script>
 	<script type="text/javascript">
 		
@@ -41,6 +102,14 @@
 				document.querySelector('#dare-name').innerText = data.dare.name;
 				document.querySelector('#dare-description').innerText = data.dare.description;
 				document.querySelector('#dare-charity').innerText = data.charity.name;
+				document.querySelector('#dare-daredevil').style.backgroundImage = `url('${data.daredevil.photo}')`;
+
+				document.querySelector('#charity-name').innerText = data.charity.name;
+				document.querySelector('#charity-description').innerText = data.charity.description
+				document.querySelector('#charity-category').innerText = data.charity.category;
+
+
+
 				const sum = data.donations.reduce((agg, val) => {
 					return agg + val.amount;
 				}, 0);
@@ -49,9 +118,8 @@
 				const profileHolder = document.querySelector('#dare-backers-profiles');
 				for (let donorID in data.donors) {
 					const img = data.donors[donorID].photo;
-					profileHolder.innerHTML += `<div class="profile-picture" style="background-image: url('${img}');"></div>`
+					profileHolder.innerHTML += `<div class="profile-picture smol" style="background-image: url('${img}');"></div>`
 				};
-				
 			}).catch(console.error);
 		}
 

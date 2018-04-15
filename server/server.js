@@ -342,7 +342,7 @@ app.get('/dares/all', function(request, response) {
 			record.id = key;
 			return record;
 		});
-		res.send(list);
+		response.send(list);
 	})
 });
 
@@ -409,9 +409,10 @@ app.get('/recommendations/:user', function(request, response) {
 			const dareList = dares.filter((dareid) => {
 				return dareid in dareMap;
 			}).map((dareid) => {
-				return dareMap[dareid];
+				let dareData = dareMap[dareid];
+				dareData.id = dareid;
+				return dareData;
 			});
-			console.log(dares, dareList)
 			response.send({
 				success: true,
 				dares: dareList
