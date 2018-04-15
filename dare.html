@@ -238,6 +238,7 @@
 							<div class="tags">
 								<span class="tag is-info" id="charity-category">Category</span>
 							</div>
+							<div id="facebook-page"></div>
 						</div>
 					</div>
 				</div>
@@ -304,6 +305,11 @@
 			window.addEventListener('popstate', function() {
 				handler.close();
 			});
+		}
+
+		function doFacebookPage(fbURL, name) {
+			const html = `<div style="width: 100%;" class="fb-page" data-href="${fbURL}" data-tabs="timeline" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="${fbURL}" class="fb-xfbml-parse-ignore"><a href="${fbURL}">${name}</a></blockquote></div>`
+			document.querySelector('#facebook-page').innerHTML = html;
 		}
 
 		function main(user) {
@@ -374,6 +380,10 @@
 				document.querySelector('#charity-name').innerText = data.charity.name;
 				document.querySelector('#charity-description').innerText = data.charity.description
 				document.querySelector('#charity-category').innerText = data.charity.category;
+
+				if (data.charity.facebook) {
+					doFacebookPage(data.charity.facebook, data.charity.name);
+				}
 
 				const sum = data.donations.reduce((agg, val) => {
 					return agg + val.amount;
