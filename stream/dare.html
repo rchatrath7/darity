@@ -429,7 +429,7 @@
 			const referrer = qps.shared;
 			$.ajax({
 				type: 'POST',
-				url: `${SERVER_URL}/share/create?=${$.param({
+				url: `${SERVER_URL}/share/create/?${$.param({
 					dare: DARE_ID,
 					user: user.id,
 					referrer: referrer
