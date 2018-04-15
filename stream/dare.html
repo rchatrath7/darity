@@ -137,13 +137,11 @@
 							<h3>$<span id="dare-raised"></span> raised from <span id="dare-backed"></span> people</h3>
 							<div id="dare-backers-profiles"></div>
 							<h3><span id="dare-percentage"></span>% of $<span id="dare-goal"></span> goal</h3>
+							<div>
+	                            <canvas id="canvas" height="300px"></canvas>
+	                        </div>
 						</div>
 					</div>
-				    <div class="card">
-                        <div class="card-content">
-                            <canvas id="canvas"></canvas>
-                        </div>
-                    </div>
                 </div>
                 <div class="column is-6">
                     <div id="daredevil-center">
@@ -346,55 +344,67 @@
 					profileHolder.innerHTML += `<div class="profile-picture smol" style="background-image: url('${img}');"></div>`
 				}
 
-        const timeData = data.donations.map((val) => {
-            return {x: new Date(val.timestamp), y: val.amount};
-        });
+		        const timeData = data.donations.sort((a, b) => {
+		        	return a.timestamp - b.timestamp;
+		        }).reduce((agg, val, idx, full) => {
+		        	if (agg.length === 0) {
+		        		full.unshift({timestamp: new Date(data.dare.created), amount: 0});
+		        		full.push({timestamp: Date.now(), amount: 0});
+		        		//console.log(agg, val, idx, full)
+		        		agg = full;
+		        	}
+		        	return agg;
+		        }, []).reduce((list, val) => {
+		        	let dp = {x: val.timestamp, y: val.amount};
+		        	if (list.length === 0) {
+		        		list.push(dp);
+		        	} else {
+		        		dp.y += list[list.length - 1].y;
+		        		list.push(dp);
+		        	}
+		        	console.log(dp);
+		            return list;
+		        }, []);
 
-        var ctx = document.getElementById('canvas').getContext('2d');
+		        var ctx = document.getElementById('canvas').getContext('2d');
 
-        var chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                datasets: [{
-                    label: 'Amount raised over time',
-                    backgroundColor: 'black',
-                    borderColor: 'white',
-                    fill: false,
-                    data: timeData,
-                }],
-            },
-            options: {
-                scales: {
-                    xAxes: [{
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Date',
-                        },
-                    }],
-                    yAxes: [{
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Amount',
-                        },
-                    }],
-                },
-                annotation: {
-                  annotations: [{
-                    type: 'line',
-                    mode: 'horizontal',
-                    scaleID: 'y-axis-0',
-                    value: 1000.6,
-                    borderColor: 'rgb(75, 192, 192)',
-                    borderWidth: 4,
-                    label: {
-                      content: 'Threshold'
-                    }
-                  }]
-                },
-            },
-        });
+		        var chart = new Chart(ctx, {
+		            type: 'line',
+		            data: {
+		                datasets: [{
+		                    label: 'Amount Raised over Time',
+		                    //backgroundColor: 'black',
+		                    //borderColor: 'black',
+		                    backgroundColor: 'rgba(0, 209, 178, 0.5)',
+							borderColor: '#00d1b2',
+		                    fill: true,
+		                    data: timeData
+		                }],
+		            },
+		            options: {
+		            	responsive: true,
+		            	maintainAspectRatio: false,
+		                scales: {
+		                    xAxes: [{
+		                    	display: true,
+		                        scaleLabel: {
+		                            display: true,
+		                            labelString: 'Date',
+		                        }
+		                    }],
+		                    yAxes: [{
+		                    	display: true,
+		                        scaleLabel: {
+		                            display: true,
+		                            labelString: 'Amount',
+		                        },
+		                    }],
+		                }
+		            },
+		        });
 
-        chart.update();
+		        chart.update();
+
 				let editing = false;
 				const editBtn = document.querySelector('#edit-btn');
 				editBtn.addEventListener('click', (e) => {
