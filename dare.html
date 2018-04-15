@@ -132,6 +132,7 @@
 											<div class="level-left">
 												<div class="level-item">
 													<button class="button is-medium is-primary" id="customButton">Give</button>
+													<button class="button is-medium is-primary is-inverted is-outlined" id="share-btn">Share</button>
 												</div>
 												<div class="level-item">
 													<h3 class="subtitle is-5">Goal: $<span id="dare-biggoal"></span></h3>
@@ -150,7 +151,7 @@
 	<section class="section">
 		<div class="container content">
 			<div class="columns">
-				<div class="column is-6">
+				<div class="column is-8">
 					<div class="card">
 						<div class="card-content">
 							<h2>Description</h2>
@@ -176,7 +177,7 @@
 						</div>
 					</div>
                 </div>
-                <div class="column is-6">
+                <div class="column is-4">
                     <div id="daredevil-center">
 						<div class="card">
 							<div class="card-content">
@@ -339,6 +340,14 @@
 					document.querySelector('#dare-video').src = `${SERVER_URL}/video/view/${data.dare.id}`;
 					document.querySelector('#dare-video-holder').style.display = 'block';
 				}
+
+				document.querySelector('#share-btn').addEventListener('click', (e) => {
+					vex.dialog.prompt({
+						message: `Help share ${data.daredevil.name.split(' ')[0]}'s dare to raise money for ${data.charity.name}!`,
+						value: `${SERVER_URL}/share/${data.dare.id}?uid=${user.id}`,
+						callback: () => {}
+					});
+				});
 
 				document.querySelector('#facebook-btn').addEventListener('click', (e) => {
 					FB.ui({

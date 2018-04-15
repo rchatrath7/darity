@@ -474,6 +474,18 @@ app.get('/charities/view/:id', function(request, response) {
 	});
 });
 
+app.get('/charities/all', function(request, response) {
+	db.ref('charities').once('value', (snap) => {
+		const val = snap.val() || {};
+		const list = Object.keys(val).map((key) => {
+			const record = val[key]
+			record.id = key;
+			return record;
+		});
+		response.send(list);
+	});
+});
+
 app.post('/charities/update/:id', function(request, response) {
 	const id = request.params.id;
 	const query = request.query;

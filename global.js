@@ -9,8 +9,6 @@ const FirebaseApp = firebase.initializeApp({
 	messagingSenderId: '896239056097'
 }, 'Darity Server');
 
-const LOCAL = true;
-
 const facebookProvider = new firebase.auth.FacebookAuthProvider();
 
 function loginWithFacebook() {
@@ -53,7 +51,7 @@ function getUserData(source) {
 
 function checkLogin() {
 	return new Promise((resolve, reject) => {
-		if (LOCAL) {
+		if (localStorage.getItem('local')) {
 			resolve({
 				id: "Hsv6bQodv5Vyvhsm0vpWAy5uAyP2",
 				name: "Vinesh Kannan",
