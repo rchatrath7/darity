@@ -140,13 +140,79 @@ app.get('/profile', function(request, response) {
 	}
 });
 
+function getDonationList(id) {
+	return new Promise((resolve, reject) => {
+		const ref = db.ref(`donations`).orderByChild('dare').equalTo(id);
+		ref.once('value', (donationSnap) => {
+			const donationVal = donationSnap.val() || {};
+			const donationList = Object.keys(donationVal).map((key) => {
+				let donationData = donationVal[key];
+				donationData.id = key;
+				return donationData;
+			});
+			resolve({
+				id: id,
+				list: donationList
+			});
+		});
+	});
+}
+
+function getCharity(id) {
+	return new Promise((resolve, reject) => {
+		db.ref(`charities/${id}`).once('value', (snap) => {
+			const val = snap.val() || {};
+			resolve({
+				id: id,
+				charity: val
+			});
+		});
+	});
+}
+
+app.get('/dares/data/:id', function(request, response) {
+	const id = request.params.id;
+	if (id) {
+		db.ref(`dares/${id}`).once('value', (snap) => {
+			const dareData = snap.val() || false;
+			if (dareData) {
+				const promises = [getCharity(dareData.charity), getDonationList(id)];
+				Promise.all(promises).then((resData) => {
+					const charityRes = resData[0];
+					const listRes = resData[1];
+					response.send({
+						dare: dareData,
+						donations: listRes.list,
+						charity: charityRes.charity
+					});
+				}).catch((error) => {
+					response.send({
+						success: false,
+						error: `DatabaseError: ${error}`
+					});
+				});
+			} else {
+				response.send({
+					success: false,
+					error: `No data for dare id: ${id}`
+				});
+			}
+		});
+	} else {
+		response.send({
+			success: false,
+			error: 'Missing dare id.'
+		});
+	}
+});
+
 app.get('/dares/view/:id', function(request, response) {
 	const id = request.params.id;
 	if (id) {
 		db.ref(`dares/${id}`).once('value', (snap) => {
-			const daraData = snap.val() || false;
-			if (daraData) {
-				response.send(daraData);
+			const dareData = snap.val() || false;
+			if (dareData) {
+				response.send(dareData);
 			} else {
 				response.send({
 					success: false,
