@@ -50,7 +50,7 @@ app.get('/hello', function(request, response) {
 
 app.post('/login', function(request, response) {
 	const query = request.body;
-	const uid = query.uid;
+	const uid = query.id;
 	if (!uid) {
 		response.send({
 			success: false,
@@ -72,7 +72,7 @@ app.post('/login', function(request, response) {
 
 app.get('/profile', function(request, response) {
 	const query = request.query;
-	const uid = query.uid;
+	const uid = query.id;
 	if (uid) {
 		db.ref(`users/${uid}`).once('value', (snap) => {
 			const profile = snap.val() || false;
@@ -89,6 +89,29 @@ app.get('/profile', function(request, response) {
 		response.send({
 			success: false,
 			error: 'Missing user id.'
+		});
+	}
+});
+
+app.get('/dare', function(request, response) {
+	const query = request.query;
+	const id = query.id;
+	if (id) {
+		db.ref(`dares/${id}`).once('value', (snap) => {
+			const daraData = snap.val() || false;
+			if (daraData) {
+				response.send(daraData);
+			} else {
+				response.send({
+					success: false,
+					error: `No data for dare id: ${id}`
+				});
+			}
+		});
+	} else {
+		response.send({
+			success: false,
+			error: 'Missing dare id.'
 		});
 	}
 });

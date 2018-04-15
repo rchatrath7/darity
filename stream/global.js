@@ -1,12 +1,12 @@
 /* global firebase */
 
 const FirebaseApp = firebase.initializeApp({
-	apiKey: 'AIzaSyBJE9CK0KN_T5ean3jts6PEjP2hL9lyEps',
-	authDomain: 'darityserver.firebaseapp.com',
-	databaseURL: 'https://darityserver.firebaseio.com',
-	projectId: 'darityserver',
-	storageBucket: 'darityserver.appspot.com',
-	messagingSenderId: '896239056097'
+  apiKey: 'AIzaSyBJE9CK0KN_T5ean3jts6PEjP2hL9lyEps',
+  authDomain: 'darityserver.firebaseapp.com',
+  databaseURL: 'https://darityserver.firebaseio.com',
+  projectId: 'darityserver',
+  storageBucket: 'darityserver.appspot.com',
+  messagingSenderId: '896239056097'
 }, 'Darity Server');
 
 const facebookProvider = new firebase.auth.FacebookAuthProvider();
@@ -30,7 +30,7 @@ function getProvider(source) {
 
 function getUserData(source) {
   return {
-    uid: source.uid,
+    id: source.uid,
     name: source.displayName,
     email: source.email,
     photo: source.photoURL,

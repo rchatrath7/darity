@@ -10,11 +10,16 @@ function main(user) {
   console.log(user);
   const recordingTimeMS = 5000;
   buttonRecord.addEventListener('click', (e) => {
-    doRecording(user.uid, recordingTimeMS);
+    doRecording(user.id, recordingTimeMS);
   });
 }
 
 checkLogin().then((user) => {
+  $.ajax({
+    type: 'POST',
+    url: `${SERVER_URL}/login`,
+    data: user
+  }).then(console.log).catch(console.error);
   main(user);
 }).catch((err) => {
   console.error(err);
