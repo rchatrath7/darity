@@ -10,6 +10,19 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
     <link rel="stylesheet" type="text/css" href="reset.css">
     <style>
+
+        .profile-picture {
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .profile-picture.tol {
+            margin: 10px;
+            width: 100px;
+            height: 100px;
+            background-size: 100px;
+        }
+
         .column {
             text-align: center; 
         }
@@ -38,34 +51,54 @@
 
         .subtitle {
             color:  hsl(171, 100%, 41%);
-        } 
+        }
+
     </style>
 </head>
 <body>
 	<script type="text/javascript" src="fb.js"></script>
-    <div class="columns">    
-        <div class="column is-one-quarter graphic">
-	        <h1 class="title">Darity</h1>
-	        <p class="subtitle" id="account-name"></p>
+    
+    <div class="columns">
+        <div class="column is-3 graphic">
+            <section class="section">
+                <h1 class="title is-1">Darity</h1>
+                <p>Play dares to raise money for charity.</p>
+                <hr>
+                <div class="profile-picture tol" id="account-photo"></div>
+                <h2 class="title is-4" id="account-name"></h2>
+            </section>
 	    </div>
-        <div class="column">
-            <h1 class="title">All Dares</h1>
-            <div id="all"></div>
-        </div>
-        <div class="column">
-	        <h1 class="title">Recommended Dares</h1>
-            <div id="feed"></div>
+        <div class="column is-9">
+            <!-- <section class="hero is-primary is-banner graphic">
+                <div class="hero-body">
+                    <h1 class="title is-1">Darity</h1>
+                    <h2 class="subtitle is-3">Dares for Charity.</h2>
+                </div>
+            </section> -->
+            <section class="section">
+                    <div class="columns is-gapless">
+                        <div class="column">
+                            <h1 class="title">All Dares</h1>
+                            <div id="all"></div>
+                        </div>
+                        <div class="column">
+                	        <h1 class="title">Recommended Dares</h1>
+                            <div id="feed"></div>
+                        </div>
+                    </div>
+            </section>
         </div>
     </div>
+    
 	<script type="text/javascript" src="global.js"></script>
 	<script type="text/javascript">
 
 		function renderDareList(holder, list) {
 			list.forEach((dare) => {
-				const link = `http://${document.location.host}${document.location.pathname}/dare.html?dare=${dare.dare.id}`;
+				const link = `window.location = 'dare.html?dare=${dare.dare.id}'`;
                 const dareString = `<div class="card feed-card">
                     <header class="card-header">
-                        <h1 class="card-header-title"><a href="${link}">${dare.dare.name}</a></h1>
+                        <h1 class="card-header-title"><a onclick="${link}">${dare.dare.name}</a></h1>
                     </header>
                     <div class="card-content">
                         <div class="content">
@@ -75,7 +108,7 @@
                     <div class="card-footer">
                         <span class="card-footer-item">${dare.daredevil.name}</span>
                         <span class="card-footer-item">${dare.charity.name}</span>
-                        <span class="card-footer-item">Goal: ${dare.dare.threshold}</span>
+                        <span class="card-footer-item">Goal: $${dare.dare.threshold}</span>
                     </div>
                 </div>`
                 holder.innerHTML += dareString;
@@ -84,6 +117,7 @@
 		
 		function main(user) {
 			document.querySelector('#account-name').innerText = user.name;
+            document.querySelector('#account-photo').style.backgroundImage = `url('${user.photo}')`;
 			$.ajax({
 				type: 'GET',
 				url: `${SERVER_URL}/recommendations/${user.id}`
