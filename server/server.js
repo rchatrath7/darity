@@ -123,9 +123,8 @@ app.get('/profile', function(request, response) {
 	}
 });
 
-app.get('/dare', function(request, response) {
-	const query = request.query;
-	const id = query.id;
+app.get('/dares/view/:id', function(request, response) {
+	const id = request.params.id;
 	if (id) {
 		db.ref(`dares/${id}`).once('value', (snap) => {
 			const daraData = snap.val() || false;
@@ -142,6 +141,58 @@ app.get('/dare', function(request, response) {
 		response.send({
 			success: false,
 			error: 'Missing dare id.'
+		});
+	}
+});
+
+function saveDareRevision(id, dareData) {
+	dareData.timestamp = Date.now();
+	return db.ref(`dare_revisions/${id}`).push(dareData);
+}
+
+app.post('/dares/create', function(request, response) {
+	let query = request.query;
+	query.created = Date.now();
+	db.ref(`dares`).push(query).then((done) => {
+		const pushid = done.path.pieces_[1];
+		saveDareRevision(pushid, query);
+		response.send({
+			success: true,
+			id: pushid
+		});
+	}).catch((error) => {
+		response.send({
+			success: false,
+			error: `DatabaseError: ${error}`
+		});
+	});
+});
+
+app.post('/dares/update/:id', function(request, response) {
+	const id = request.params.id;
+	const query = request.query;
+	if (!id) {
+		response.send({
+			success: false,
+			error: 'Missing user id.'
+		});
+	} else {
+		db.ref(`dares/${id}`).once('value', (snap) => {
+			const val = snap.val() || {};
+			for (let attr in query) {
+				val[attr] = query[attr];
+			}
+			db.ref(`dares/${id}`).set(val).then((done) => {
+				saveDareRevision(id, val);
+				response.send({
+					success: true
+				});
+			}).catch((error) => {
+				response.send({
+					success: false,
+					error: `DatabaseError: ${error}`
+				});
+			});
 		});
 	}
 });
