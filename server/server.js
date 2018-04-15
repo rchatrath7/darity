@@ -245,8 +245,9 @@ app.get('/dares/data/:id', function(request, response) {
 	const deep = request.query.deep || false;
 	if (id) {
 		db.ref(`dares/${id}`).once('value', (snap) => {
-			const dareData = snap.val() || false;
+			let dareData = snap.val() || false;
 			if (dareData) {
+				dareData.id = id;
 				const promises = [getCharity(dareData.charity), getDonationList(id), getUserProfile(dareData.daredevil)];
 				if (deep) {
 					promises.push(getUserMap());
@@ -302,8 +303,9 @@ app.get('/dares/view/:id', function(request, response) {
 	const id = request.params.id;
 	if (id) {
 		db.ref(`dares/${id}`).once('value', (snap) => {
-			const dareData = snap.val() || false;
+			let dareData = snap.val() || false;
 			if (dareData) {
+				dareData.id = id;
 				response.send(dareData);
 			} else {
 				response.send({
@@ -343,7 +345,33 @@ app.get('/dares/all', function(request, response) {
 			return record;
 		});
 		response.send(list);
-	})
+	});
+});
+
+app.get('/dares/detailed', function(request, response) {
+	db.ref('users').once('value', (uSnap) => {
+		db.ref('charities').once('value', (cSnap) => {
+			db.ref('dares').once('value', (snap) => {
+				const userMap = uSnap.val() || {};
+				const charMap = cSnap.val() || {};
+				const val = snap.val() || {};
+				const list = Object.keys(val).map((key) => {
+					let record = val[key];
+					record.id = key;
+					return record;
+				}).filter((dare) => {
+					return dare.daredevil in userMap && dare.charity in charMap;
+				}).map((dare) => {
+					return {
+						dare: dare,
+						daredevil: userMap[dare.daredevil],
+						charity: charMap[dare.charity]
+					}
+				});
+				response.send(list);
+			});
+		});
+	});
 });
 
 function saveDareRevision(id, dareData) {
@@ -404,18 +432,27 @@ app.get('/recommendations/:user', function(request, response) {
 	.then((recRes) => recRes.json())
 	.then((recBody) => {
 		const dares = recBody;
-		db.ref('dares').once('value', (snap) => {
-			const dareMap = snap.val() || {};
-			const dareList = dares.filter((dareid) => {
-				return dareid in dareMap;
-			}).map((dareid) => {
-				let dareData = dareMap[dareid];
-				dareData.id = dareid;
-				return dareData;
-			});
-			response.send({
-				success: true,
-				dares: dareList
+		db.ref('users').once('value', (uSnap) => {
+			db.ref('charities').once('value', (cSnap) => {
+				db.ref('dares').once('value', (snap) => {
+					const userMap = uSnap.val() || {};
+					const charMap = cSnap.val() || {};
+					const dareMap = snap.val() || {};
+					const list = Object.keys(dareMap).map((key) => {
+						let record = dareMap[key];
+						record.id = key;
+						return record;
+					}).filter((dare) => {
+						return dare.daredevil in userMap && dare.charity in charMap;
+					}).map((dare) => {
+						return {
+							dare: dare,
+							daredevil: userMap[dare.daredevil],
+							charity: charMap[dare.charity]
+						}
+					});
+					response.send(list);
+				});
 			});
 		});
 	}).catch((error) => {

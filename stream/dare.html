@@ -7,6 +7,10 @@
 	<title>Darity</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
+	<script type="text/javascript" src="./vex/vex.combined.min.js"></script>
+	<script type="text/javascript">vex.defaultOptions.className = 'vex-theme-plain';</script>
+	<link rel="stylesheet" type="text/css" href="./vex/vex.css">
+	<link rel="stylesheet" type="text/css" href="./vex/vex-theme-plain.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
 	<style type="text/css">
 		
@@ -30,19 +34,26 @@
 		}
 
 		.is-banner {
-			background-image: url('defaultback.png');
-			background-size: 100%;
-			background-position: center center;
+			background: url('defaultback.png'); no-repeat center center fixed; 
+			-webkit-background-size: cover;
+			-moz-background-size: cover;
+			-o-background-size: cover;
+			background-size: cover;
 		}
 
 		.is-level-text .title, .is-level-text .subtitle {
 			margin: 25px 10px;
 		}
 
+		.buttons {
+			padding: 0px 10px;
+		}
+
 	</style>
 </head>
 <body>
 	<script type="text/javascript" src="./fb.js"></script>
+	<script src="https://checkout.stripe.com/checkout.js"></script>
 	
 	<section class="hero is-medium is-primary is-banner">
 		<div class="hero-body">
@@ -54,8 +65,12 @@
 						</div>
 						<div class="level-item">
 							<div class="is-level-text">
-								<h1 class="title is-2" id="dare-name"></h1>
+								<h1 class="title is-1" id="dare-name"></h1>
 								<h2 class="subtitle is-3" id="dare-charity"></h2>
+								<p class="buttons">
+									<button class="button is-medium is-primary" id="customButton">Give</button>
+									<button class="button is-medium is-primary is-inverted is-outlined">Post</button>
+								</p>
 							</div>
 						</div>
 					</div>
@@ -91,6 +106,65 @@
 	</section>
 	<script type="text/javascript" src="./global.js"></script>
 	<script type="text/javascript">
+
+		function promptGive(data, user) {
+			vex.dialog.prompt({
+				message: `How much will you give? (USD)`,
+				callback: (giveAmount) => {
+					if (giveAmount) {
+						try {
+							const cents = parseInt((parseFloat(giveAmount) * 100).toFixed(0));
+							doStripe(cents, data, user);
+						} catch (error) {
+							console.error(error);
+						}
+					}
+				}
+			});
+		}
+
+		function doStripe(giveAmount, data, user) {
+			const handler = StripeCheckout.configure({
+				key: 'pk_test_zsTE8lxpJEz03ETvkxlAMIa4',
+				image: 'https://stripe.com/img/documentation/checkout/marketplace.png',
+				locale: 'auto',
+				token: function(token) {
+					// You can access the token ID with `token.id`.
+					// Get the token ID to your server-side code for use.
+					console.log('token', token);
+					$.ajax({
+						type: 'POST',
+						url: `${SERVER_URL}/donations/create/${data.dare.id}/?${$.param({
+							user: user.id,
+							amount: giveAmount
+						})}`,
+						data: {
+							token: token.id
+						}
+					}).then((done) => {
+						vex.dialog.alert({
+							message: `Thank you for your gift!`,
+							callback: () => {
+								window.location.reload();
+							}
+						});
+					}).catch(console.error);
+				}
+			});
+
+			// Open Checkout with further options:
+			handler.open({
+				name: 'Give to this Dare',
+				description: `Benefiting ${data.charity.name}`,
+				amount: giveAmount,
+				email: user.email
+			});
+
+			// Close Checkout on page navigation:
+			window.addEventListener('popstate', function() {
+				handler.close();
+			});
+		}
 		
 		function main(user) {
 			const DARE_ID = getQueryParams(document.location.search).dare;
@@ -98,6 +172,12 @@
 				type: 'GET',
 				url: `${SERVER_URL}/dares/data/${DARE_ID}/?deep=true`
 			}).then((data) => {
+
+				document.getElementById('customButton').addEventListener('click', function(e) {
+					promptGive(data, user);
+					e.preventDefault();
+				});
+
 				console.log(data);
 				document.querySelector('#dare-name').innerText = data.dare.name;
 				document.querySelector('#dare-description').innerText = data.dare.description;
@@ -108,8 +188,6 @@
 				document.querySelector('#charity-description').innerText = data.charity.description
 				document.querySelector('#charity-category').innerText = data.charity.category;
 
-
-
 				const sum = data.donations.reduce((agg, val) => {
 					return agg + val.amount;
 				}, 0);
@@ -119,7 +197,8 @@
 				for (let donorID in data.donors) {
 					const img = data.donors[donorID].photo;
 					profileHolder.innerHTML += `<div class="profile-picture smol" style="background-image: url('${img}');"></div>`
-				};
+				}
+
 			}).catch(console.error);
 		}
 
